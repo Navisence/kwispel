@@ -1,0 +1,22 @@
+{% if round_list %}
+  <p>Overview of all rounds</p>
+  <ul>
+  {% for round in round_list %}
+  <li>{{ round.round_name }}</li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>No rounds are available.</p>
+{% endif %}
+
+{% if team_list %}
+  <p>Overview of all teams</p>
+  <ul>
+  {% for team in team_list %}
+  <li>{{ team.team_name }}</li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>No teams are available.</p>
+{% endif %}
+
