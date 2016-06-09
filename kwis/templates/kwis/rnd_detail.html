@@ -1,0 +1,45 @@
+<html>
+  <head></head>
+  <body>
+    <h1>{{ rnd.round_name }}</h1>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    
+    <table>
+    <caption>Max scores this round: {{ rnd.max_score }}</caption>
+    {% for team in team_list_todo %}
+      <tr>
+        <form action="{% url 'kwis:vote' rnd.id team.id %}" method="post">
+        {% csrf_token %}
+        <td>
+          <label><a href="{% url 'kwis:team_detail' team.id %}">{{ team.team_name }}</a></label>
+        </td>
+        <td>
+          {{ form.score }}
+        <td>
+        <td>
+          <input type="submit" value="Enter" />
+        <td>
+        </form>
+      </tr>
+    {% endfor %}
+    
+    {% for answer in rnd.qanswer_set.all %}
+      <tr>
+        <td>
+          <a href="{% url 'kwis:team_detail' answer.team.id %}">{{ answer.team.team_name }}</a>
+        </td>
+        <td>
+          <a href="{% url 'kwis:vote' answer.rnd.id answer.team.id %}">({{ answer.score }})</a>
+        </td>
+        <td>
+        </td>
+       </tr>
+    {% endfor %}
+    </table>
+
+    <HR>
+    Links: <a href="{% url 'kwis:index' %}">Index</a>,
+    <a href="{% url 'kwis:ranking' %}">Ranking</a>,
+    <a href="/admin/">Admin</a>
+  </body>
+</html>

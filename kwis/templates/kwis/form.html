@@ -1,0 +1,29 @@
+<html>
+  <head></head>
+  <body>
+
+    <h1>{{ rnd.round_name }}</h1>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <table>
+        <tr>
+            <form action="{% url 'kwis:vote' rnd.id team.id %}" method="post">
+            {% csrf_token %}
+            <th>
+                <label><a href="{% url 'kwis:team_detail' team.id %}">{{ team.team_name }}</a></label>
+            </th>
+            <td>
+    	    {{ form.score.errors }}
+                {{ form.score }}
+            </td>
+            <td>
+                <input type="submit" value="Enter" />
+            </td>
+            </form>
+        </tr>
+    </table>
+    
+    Links: <a href="{% url 'kwis:index' %}">Index</a>,
+    <a href="{% url 'kwis:ranking' %}">Ranking</a>,
+    <a href="/admin/">Admin</a>
+  </body>
+</html>
