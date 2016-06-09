@@ -18,7 +18,7 @@
         </td>
       </tr>
     {% endfor %}
-    {% for rnd in round_list_todo %}
+    {% for rnd, form in round_list_todo %}
       <tr>
         <form action="{% url 'kwis:vote' rnd.id team.id %}" method="post">
         {% csrf_token %}

@@ -5,6 +5,7 @@
     <h1>{{ rnd.round_name }}</h1>
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
     <table>
+    <caption>Max score this round: {{ rnd.max_score }}</caption>
         <tr>
             <form action="{% url 'kwis:vote' rnd.id team.id %}" method="post">
             {% csrf_token %}
@@ -22,6 +23,7 @@
         </tr>
     </table>
     
+    <HR>
     Links: <a href="{% url 'kwis:index' %}">Index</a>,
     <a href="{% url 'kwis:ranking' %}">Ranking</a>,
     <a href="/admin/">Admin</a>

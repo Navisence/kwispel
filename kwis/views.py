@@ -2,14 +2,20 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django import forms
-from django.forms import DecimalField
 
 from decimal import *
 
 from .models import QRound, QTeam, QAnswer
 
+class PostedForm(forms.Form):
+    score = forms.DecimalField(max_digits=6, decimal_places=1)
+
 class ScoreForm(forms.Form):
-    score = DecimalField(max_digits=6, decimal_places=1)
+    def __init__(self, max_value=None, *args, **kwargs):
+        super(ScoreForm, self).__init__(*args, **kwargs)
+        self.fields['score'] = forms.DecimalField(max_digits=6, decimal_places=1, min_value=0, max_value=max_value)
+
+    score = forms.DecimalField(max_digits=6, decimal_places=1, min_value=0)
 
 #   Initial views contain overviews only
 def index(request):
@@ -48,7 +54,7 @@ def rnd_detail(request, rnd_id):
     # Teams that already have a score in this round can be accessed from the template using the _set
 
     # Create form to be used for all other teams
-    form = ScoreForm()
+    form = ScoreForm(max_value=rnd.max_score)
 
     return render(request, 'kwis/rnd_detail.html', {'rnd': rnd, 'team_list_todo': team_list_todo, 'form': form})
 
@@ -66,12 +72,10 @@ def team_detail(request, team_id):
     round_list_todo = []
     for r in QRound.objects.all():
         if alist.filter(rnd = r).count() == 0:
-            round_list_todo.append(r)
+            form = ScoreForm(max_value=r.max_score)
+            round_list_todo.append((r, form))
 
-    # Create form to be used for empty rounds
-    form = ScoreForm()
-
-    return render(request, 'kwis/team_detail.html', {'team': team, 'subtotal': subtotal, 'round_list_todo': round_list_todo, 'form': form})
+    return render(request, 'kwis/team_detail.html', {'team': team, 'subtotal': subtotal, 'round_list_todo': round_list_todo})
 
 # The vote view handles the POST requests
 def vote(request, rnd_id, team_id):
@@ -88,10 +92,8 @@ def vote(request, rnd_id, team_id):
 
     # Get form
     if request.method == 'POST':
-        form = ScoreForm(request.POST)
+        form = PostedForm(request.POST)
         if form.is_valid():
-
-            # Modify score list
             score= form.cleaned_data['score']
 
             # Primitive way to check correct value
@@ -108,6 +110,6 @@ def vote(request, rnd_id, team_id):
                 return HttpResponseRedirect(reverse('kwis:rnd_detail', args=(arnd.id,)))
 
     else:
-        form = ScoreForm(initial={'score': a.score})
+        form = ScoreForm(max_value=arnd.max_score, initial={'score': a.score})
 
     return render(request, 'kwis/form.html', {'rnd': arnd, 'team': ateam, 'form': form})

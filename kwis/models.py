@@ -3,7 +3,7 @@ from django.db import models
 # These models are defined:
 # - Teams participating
 # - Rounds in the quiz
-# - Answered scores per round for each team
+# - Answered score per round for each team
 
 class QTeam(models.Model):
     # A team only needs a name for identification
