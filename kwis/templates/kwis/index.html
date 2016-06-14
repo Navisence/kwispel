@@ -1,29 +1,41 @@
+<!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+    {% include "kwis/headerContent.html" %}
+  </head>
   <body>
-    {% if round_list %}
-      <p>Overview of all rounds</p>
-      <ul>
-      {% for round in round_list %}
-      <li><a href="{% url 'kwis:rnd_detail' round.id %}">{{ round.round_name }}</a></li>
-      {% endfor %}
-      </ul>
-    {% else %}
-      <p>No rounds are available.</p>
-    {% endif %}
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6">
+        {% if round_list %}
+          <p>Overview of all rounds</p>
+          <ul>
+          {% for round in round_list %}
+          <li><a href="{% url 'kwis:rnd_detail' round.id %}">{{ round.round_name }}</a></li>
+          {% endfor %}
+          </ul>
+        {% else %}
+          <p>No rounds are available.</p>
+        {% endif %}
+        </div>
     
-    {% if team_list %}
-      <p>Overview of all teams</p>
-      <ul>
-      {% for team in team_list %}
-      <li><a href="{% url 'kwis:team_detail' team.id %}">{{ team.team_name }}</a></li>
-      {% endfor %}
-      </ul>
-    {% else %}
-      <p>No teams are available.</p>
-    {% endif %}
+        <div class="col-sm-6">
+        {% if team_list %}
+          <p>Overview of all teams</p>
+          <ul>
+          {% for team in team_list %}
+          <li><a href="{% url 'kwis:team_detail' team.id %}">{{ team.team_name }}</a></li>
+          {% endfor %}
+          </ul>
+        {% else %}
+          <p>No teams are available.</p>
+        {% endif %}
+        </div>
 
+      </div> <!-- /row -->
     <HR>
     Links: <a href="{% url 'kwis:ranking' %}">Ranking</a>, <a href="/admin/">Admin</a>
+    </div> <!-- /container -->
   </body>
 </html>

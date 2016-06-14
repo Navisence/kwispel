@@ -4,6 +4,11 @@ kwispel is a Django app to manage quiz results and show rankings
 ## Status
 Early development
 
+## Requirements
+ * python3
+ * django
+ * django-bootstrap3
+
 ## Startup
 After installation, run the following commands:
  * manage.py migrate

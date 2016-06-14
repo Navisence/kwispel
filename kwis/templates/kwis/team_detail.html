@@ -1,44 +1,58 @@
+<!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+    {% include "kwis/headerContent.html" %}
+  </head>
   <body>
-    <h1>{{ team.team_name }}</h1>
-    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <div class="container">
+      <div class="row">
+        <h1>{{ team.team_name }}</h1>
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+      </div> <!-- /row -->
     
-    <table>
-    <caption>Subtotal: {{ subtotal }}</caption>
-    {% for answer in team.qanswer_set.all %}
-      <tr>
-        <td>
-          <a href="{% url 'kwis:rnd_detail' answer.rnd.id %}">{{ answer.rnd.round_name }}</a>
-        </td>
-        <td>
-          <a href="{% url 'kwis:vote' answer.rnd.id answer.team.id %}">{{ answer.score }}</a>
-        </td>
-        <td>
-        </td>
-      </tr>
-    {% endfor %}
-    {% for rnd, form in round_list_todo %}
-      <tr>
-        <form action="{% url 'kwis:vote' rnd.id team.id %}" method="post">
-        {% csrf_token %}
-        <td>
-          <label><a href="{% url 'kwis:rnd_detail' rnd.id %}">{{ rnd.round_name }}</a></label>
-        </td>
-        <td>
-          {{ form.score }}
-        <td>
-        <td>
-          <input type="submit" value="Enter" />
-        <td>
-        </form>
-      </tr>
-    {% endfor %}
-    </table>
-    
-    <HR>
-    Links: <a href="{% url 'kwis:index' %}">Index</a>,
-    <a href="{% url 'kwis:ranking' %}">Ranking</a>,
-    <a href="/admin/">Admin</a>
+      <div class="row">
+        <table class="table table-condensed table-striped">
+          <caption>Subtotal: {{ subtotal }}</caption>
+          <thead>
+          <tr>
+            <th class="col-sm-4">Round</th>
+            <th class="col-sm-4">Score</th>
+            <th class="col-sm-4"></th>
+          </tr>
+          </thead>
+          {% for answer in team.qanswer_set.all %}
+          <tr>
+            <td>
+              <a href="{% url 'kwis:rnd_detail' answer.rnd.id %}">{{ answer.rnd.round_name }}</a>
+            </td>
+            <td>
+              <a href="{% url 'kwis:vote' answer.rnd.id answer.team.id %}">{{ answer.score }}</a>
+            </td>
+            <td>
+            </td>
+          </tr>
+          {% endfor %}
+          {% for rnd, form in round_list_todo %}
+          <tr>
+            <form action="{% url 'kwis:vote' rnd.id team.id %}" method="post">
+            {% csrf_token %}
+            <td>
+              <label><a href="{% url 'kwis:rnd_detail' rnd.id %}">{{ rnd.round_name }}</a></label>
+            </td>
+            <td>
+              {{ form.score }}
+            <td>
+            <input type="submit" value="Enter" />
+            </form>
+          </tr>
+          {% endfor %}
+        </table>
+      </div> <!-- /row -->
+
+      <HR>
+      Links: <a href="{% url 'kwis:index' %}">Index</a>,
+      <a href="{% url 'kwis:ranking' %}">Ranking</a>,
+      <a href="/admin/">Admin</a>
+    </div> <!-- /container -->
   </body>
 </html>
