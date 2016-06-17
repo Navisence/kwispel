@@ -10,8 +10,8 @@
         {% if round_list %}
           <p>Overview of all rounds</p>
           <ul>
-          {% for round in round_list %}
-          <li><a href="{% url 'kwis:rnd_detail' round.id %}">{{ round.round_name }}</a></li>
+          {% for round, status in round_list %}
+	  <li><a href="{% url 'kwis:rnd_detail' round.id %}">{{ round.round_name }}</a>: {{ status }}</li>
           {% endfor %}
           </ul>
         {% else %}

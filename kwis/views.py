@@ -22,22 +22,50 @@ def index(request):
     # List all teams and all rounds. This is the main jury view from where to add scores
     round_list = QRound.objects.all()
     team_list = QTeam.objects.all()
-    context = {'round_list': round_list, 'team_list': team_list}
+
+    round_status = []
+    for r in round_list:
+        if r.qanswer_set.count() == team_list.count():
+            round_status.append((r, "Complete"))
+        else:
+            round_status.append((r, "%d / %d" % (r.qanswer_set.count(), team_list.count())))
+
+    context = {'round_list': round_status, 'team_list': team_list}
     return render(request, 'kwis/index.html', context)
 
 def ranking(request):
     # This is the main view for contestants: ranking of teams based on their results
+
+    # First identify completed rounds. A completed round has as much elements in its
+    # qanswer_set as there are participating teams.
+    rnd_complete = []
+    for rnd in QRound.objects.all():
+        if rnd.qanswer_set.count() == QTeam.objects.count():
+            rnd_complete.append(rnd)
+
+    if len(rnd_complete) == QRound.objects.count():
+        caption = "Final ranking"
+    elif len(rnd_complete) == 0:
+        caption = "No results yet"
+    else:
+        caption = "Ranking after "
+        for rnd in rnd_complete:
+            caption += rnd.round_name + ", "
+        caption = caption[:-2]
+
     result = []
     for team in QTeam.objects.all():
         teamtotal = 0
         for a in team.qanswer_set.all():
-            teamtotal += a.score
+            # Only add results for complete rounds
+            if a in rnd_complete:
+                teamtotal += a.score
         result.append((team.team_name, teamtotal))
 
     # Sort
     sorted_result = sorted(result, reverse=True, key=lambda tup: tup[1])
 
-    return render(request, 'kwis/ranking.html', {'sorted': sorted_result})
+    return render(request, 'kwis/ranking.html', {'sorted': sorted_result, 'caption': caption})
 
 # Detail views allow to view results per round or per team
 def rnd_detail(request, rnd_id):
@@ -64,9 +92,11 @@ def team_detail(request, team_id):
 
     # Count all results for this team
     subtotal = 0
-    alist = team.qanswer_set.all()
+    maxtotal = 0
+    alist = team.qanswer_set.order_by('rnd')
     for a in alist:
         subtotal += a.score
+        maxtotal += a.rnd.max_score
 
     # Create a list of rounds that have no results yet for this team
     round_list_todo = []
@@ -75,7 +105,7 @@ def team_detail(request, team_id):
             form = ScoreForm(max_value=r.max_score)
             round_list_todo.append((r, form))
 
-    return render(request, 'kwis/team_detail.html', {'team': team, 'subtotal': subtotal, 'round_list_todo': round_list_todo})
+    return render(request, 'kwis/team_detail.html', {'team': team, 'subtotal': subtotal, 'maxtotal': maxtotal, 'round_list_todo': round_list_todo})
 
 # The vote view handles the POST requests
 def vote(request, rnd_id, team_id):
