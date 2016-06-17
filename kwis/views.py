@@ -30,7 +30,7 @@ def ranking(request):
     result = []
     for team in QTeam.objects.all():
         teamtotal = 0
-        for a in QAnswer.objects.filter(team = team):
+        for a in team.qanswer_set.all():
             teamtotal += a.score
         result.append((team.team_name, teamtotal))
 
@@ -44,7 +44,7 @@ def rnd_detail(request, rnd_id):
     rnd = get_object_or_404(QRound, pk=rnd_id)
 
     # Filter a list of answers for this round
-    ar = QAnswer.objects.filter(rnd = rnd)
+    ar = rnd.qanswer_set.all()
 
     # Create a list of teams that don't have a score in this round yet
     team_list_todo = []
@@ -64,7 +64,7 @@ def team_detail(request, team_id):
 
     # Count all results for this team
     subtotal = 0
-    alist = QAnswer.objects.filter(team = team)
+    alist = team.qanswer_set.all()
     for a in alist:
         subtotal += a.score
 
