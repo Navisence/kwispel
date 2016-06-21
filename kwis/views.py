@@ -30,7 +30,16 @@ def index(request):
         else:
             round_status.append((r, "%d / %d" % (r.qanswer_set.count(), team_list.count())))
 
-    context = {'round_list': round_status, 'team_list': team_list}
+    team_status = []
+    for t in team_list:
+        subtotal = 0
+        maxtotal = 0
+        for ts in t.qanswer_set.all():
+            subtotal += ts.score
+            maxtotal += ts.rnd.max_score
+        team_status.append((t, "%.1f / %.1f" % (subtotal, maxtotal)))
+
+    context = {'round_list': round_status, 'team_list': team_status}
     return render(request, 'kwis/index.html', context)
 
 def ranking(request):
