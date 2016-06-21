@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django import forms
 
@@ -143,3 +143,47 @@ def vote(request, rnd_id, team_id):
         form = ScoreForm(max_value=arnd.max_score, initial={'score': a.score})
 
     return render(request, 'kwis/form.html', {'rnd': arnd, 'team': ateam, 'form': form})
+
+def team_result(request, team_id):
+    import matplotlib
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
+    from matplotlib.dates import DateFormatter
+    fig = Figure()
+
+    ax = fig.add_subplot(1,1,1)
+
+    # Retrieve team info and scores for the team
+    ateam = get_object_or_404(QTeam, pk=team_id)
+    answers = ateam.qanswer_set.order_by('rnd')
+
+    # Set number of vertical bars
+    ind = matplotlib.numpy.arange(len(answers))
+
+    # Retrieve score, max score and name per round
+    scores = [answer.score for answer in answers]
+    maxima = [(answer.rnd.max_score - answer.score) for answer in answers]
+    names  = [answer.rnd.round_name for answer in answers]
+
+    width = 0.25
+
+    # Draw vertical bars
+    ax.bar(ind, scores, width, color='b')
+    ax.bar(ind, maxima, width, color='w', bottom=scores)
+
+    # Set labels and title
+    ax.set_xticks(ind + width/2)
+    ax.set_xticklabels(names)
+    ax.set_xlabel("Rounds")
+    ax.set_ylabel("Scores")
+
+    title = u"Scores for %s" % ateam.team_name
+    ax.set_title(title)
+
+    ax.grid(True)
+    canvas = FigureCanvas(fig)
+    response = HttpResponse(content_type='image/png')
+
+    canvas.print_png(response)
+    return response
+

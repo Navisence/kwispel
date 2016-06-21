@@ -8,6 +8,7 @@ Early development
  * python3
  * django
  * django-bootstrap3
+ * matplotlib
 
 ## Startup
 After installation, run the following commands:
