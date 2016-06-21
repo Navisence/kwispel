@@ -8,12 +8,23 @@
       <div class="row">
         <div class="col-sm-6">
         {% if round_list %}
-          <p>Overview of all rounds</p>
-          <ul>
-          {% for round, status in round_list %}
-	  <li><a href="{% url 'kwis:rnd_detail' round.id %}">{{ round.round_name }}</a>: {{ status }}</li>
-          {% endfor %}
-          </ul>
+          <table class="table table-condensed table-striped">
+            <caption>Overview of all rounds</caption>
+            <thead>
+              <th>Round</th>
+              <th>Progress</th>
+            </thead>
+            {% for round, status in round_list %}
+            <tr>
+              <td>
+                <a href="{% url 'kwis:rnd_detail' round.id %}">{{ round.round_name }}</a>
+              </td>
+              <td>
+               {{ status }}
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
         {% else %}
           <p>No rounds are available.</p>
         {% endif %}
@@ -21,12 +32,22 @@
     
         <div class="col-sm-6">
         {% if team_list %}
-          <p>Overview of all teams</p>
-          <ul>
-          {% for team in team_list %}
-          <li><a href="{% url 'kwis:team_detail' team.id %}">{{ team.team_name }}</a></li>
-          {% endfor %}
-          </ul>
+          <table class="table table-condensed table-striped">
+          <caption>Overview of all teams</caption>
+            <thead>
+              <th>Team</th>
+              <th>Progress</th>
+            </thead>
+            {% for team in team_list %}
+            <tr>
+              <td>
+                <a href="{% url 'kwis:team_detail' team.id %}">{{ team.team_name }}</a>
+              </td>
+              <td>
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
         {% else %}
           <p>No teams are available.</p>
         {% endif %}

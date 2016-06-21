@@ -58,7 +58,7 @@ def ranking(request):
         teamtotal = 0
         for a in team.qanswer_set.all():
             # Only add results for complete rounds
-            if a in rnd_complete:
+            if a.rnd in rnd_complete:
                 teamtotal += a.score
         result.append((team.team_name, teamtotal))
 
