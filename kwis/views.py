@@ -148,7 +148,6 @@ def team_result(request, team_id):
     import matplotlib
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
-    from matplotlib.dates import DateFormatter
     fig = Figure()
 
     ax = fig.add_subplot(1,1,1)
@@ -178,6 +177,46 @@ def team_result(request, team_id):
     ax.set_ylabel("Scores")
 
     title = u"Scores for %s" % ateam.team_name
+    ax.set_title(title)
+
+    ax.grid(True)
+    canvas = FigureCanvas(fig)
+    response = HttpResponse(content_type='image/png')
+
+    canvas.print_png(response)
+    return response
+
+def rnd_result(request, rnd_id):
+    import matplotlib
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
+    fig = Figure()
+
+    ax = fig.add_subplot(1,1,1)
+
+    # Retrieve round info and scores for round
+    arnd = get_object_or_404(QRound, pk=rnd_id)
+    answers = arnd.qanswer_set.order_by('team')
+
+    # Set number of vertical bars
+    ind = matplotlib.numpy.arange(len(answers))
+
+    # Retrieve score and team name per round
+    scores = [answer.score for answer in answers]
+    names  = [answer.team.team_name for answer in answers]
+
+    width = 0.25
+
+    # Draw vertical bar
+    ax.bar(ind, scores, width, color='b')
+
+    # Set labels and title
+    ax.set_xticks(ind + width/2)
+    ax.set_xticklabels(names)
+    ax.set_xlabel("Teams")
+    ax.set_ylabel("Scores")
+
+    title = u"Scores for %s" % arnd.round_name
     ax.set_title(title)
 
     ax.grid(True)
