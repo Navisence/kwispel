@@ -205,7 +205,7 @@ def rnd_result(request, rnd_id):
 
     # Retrieve round info and scores for round
     arnd = get_object_or_404(QRound, pk=rnd_id)
-    answers = arnd.qanswer_set.order_by('team')
+    answers = arnd.qanswer_set.order_by('-team')
 
     # Set number of vertical bars
     ind = matplotlib.numpy.arange(len(answers))
@@ -217,13 +217,15 @@ def rnd_result(request, rnd_id):
     width = 0.25
 
     # Draw vertical bar
-    ax.bar(ind, scores, width, color='b')
+    ax.barh(ind, scores, width, color='b')
 
     # Set labels and title
-    ax.set_xticks(ind + width/2)
-    ax.set_xticklabels(names)
-    ax.set_xlabel("Teams")
-    ax.set_ylabel("Scores")
+    ax.set_yticks(ind + width/2)
+    ax.set_yticklabels(names)
+    ax.set_ylabel("Teams")
+    ax.set_xlabel("Scores")
+
+    #ax.tight_layout()
 
     title = u"Scores for %s" % arnd.round_name
     ax.set_title(title)
