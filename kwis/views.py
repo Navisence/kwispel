@@ -159,6 +159,7 @@ def team_result(request, team_id):
     from matplotlib.figure import Figure
     fig = Figure()
 
+    fig.set_tight_layout(True)
     ax = fig.add_subplot(1,1,1)
 
     # Retrieve team info and scores for the team
@@ -201,6 +202,7 @@ def rnd_result(request, rnd_id):
     from matplotlib.figure import Figure
     fig = Figure()
 
+    fig.set_tight_layout(True)
     ax = fig.add_subplot(1,1,1)
 
     # Retrieve round info and scores for round
