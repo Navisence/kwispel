@@ -7,6 +7,11 @@ from decimal import *
 
 from .models import QRound, QTeam, QAnswer
 
+import matplotlib
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+
+
 class PostedForm(forms.Form):
     score = forms.DecimalField(max_digits=6, decimal_places=1)
 
@@ -154,11 +159,7 @@ def vote(request, rnd_id, team_id):
     return render(request, 'kwis/form.html', {'rnd': arnd, 'team': ateam, 'form': form})
 
 def team_result(request, team_id):
-    import matplotlib
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-    from matplotlib.figure import Figure
     fig = Figure()
-
     fig.set_tight_layout(True)
     ax = fig.add_subplot(1,1,1)
 
@@ -197,11 +198,7 @@ def team_result(request, team_id):
     return response
 
 def rnd_result(request, rnd_id):
-    import matplotlib
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-    from matplotlib.figure import Figure
     fig = Figure()
-
     fig.set_tight_layout(True)
     ax = fig.add_subplot(1,1,1)
 
@@ -233,6 +230,119 @@ def rnd_result(request, rnd_id):
     ax.set_title(title)
 
     ax.grid(True)
+
+    canvas = FigureCanvas(fig)
+    response = HttpResponse(content_type='image/png')
+
+    canvas.print_png(response)
+    return response
+
+def team_overview(request):
+    fig = Figure()
+    fig.set_tight_layout(True)
+    ax1 = fig.add_subplot(1,1,1)
+    #ax2 = ax1.twinx()
+
+    # Cumulative scores per team
+    ind = matplotlib.numpy.arange(QTeam.objects.count())
+
+    subtotals = []
+    maxtotals = []
+    names     = []
+    for t in QTeam.objects.all():
+        subtotal = 0
+        maxtotal = 0
+        for ts in t.qanswer_set.all():
+            subtotal += ts.score
+            maxtotal += ts.rnd.max_score
+        subtotals.append(subtotal)
+        maxtotals.append(maxtotal - subtotal)
+        names.append(t.team_name)
+
+    width = 0.25
+
+    # Draw bars
+    ax1.bar(ind, subtotals, width, color='r')
+    ax1.bar(ind, maxtotals, width, color='y', bottom=subtotals)
+
+    # Set labels and title
+    ax1.set_xticks(ind + width/2)
+    #ax1.set_xticklabels(names)
+    ax1.set_xticklabels(ind)
+    ax1.set_xlabel("Teams")
+    ax1.set_ylabel("Cumulative score")
+
+    title = u"Progress per team"
+    ax1.set_title(title)
+
+    ax1.grid(True)
+    #ax2.grid(True)
+
+
+    canvas = FigureCanvas(fig)
+    response = HttpResponse(content_type='image/png')
+
+    canvas.print_png(response)
+    return response
+
+def rnd_overview(request):
+    fig = Figure()
+    fig.set_tight_layout(True)
+    ax1 = fig.add_subplot(1,1,1)
+    ax2 = ax1.twinx()
+
+    # Number of teams determines max level of round completion
+    nbTeams = QTeam.objects.count()
+
+    # Number of bars
+    ind = matplotlib.numpy.arange(QRound.objects.count())
+
+    # Progress per round
+    completion = []
+    remaining  = []
+    scores     = []
+    maxima     = []
+    names      = []
+    for r in QRound.objects.all():
+        rc = r.qanswer_set.count()
+        completion.append(rc)
+        remaining.append(nbTeams - rc)
+        names.append(r.round_name)
+
+        rs = 0
+        for a in r.qanswer_set.all():
+            rs += a.score
+        scores.append(rs)
+        maxima.append(r.max_score * r.qanswer_set.count() - rs)
+
+    width = 0.25
+
+    # Draw bars
+    ax1.bar(ind, scores, width, color='r')
+    ax1.bar(ind, maxima, width, color='y', bottom=scores)
+    ax2.bar(ind+width, completion, width, color='b')
+    ax2.bar(ind+width, remaining, width, color='w', bottom=completion)
+
+    # Set labels and title
+    ax1.set_xticks(ind + width)
+    ax1.set_xticklabels(names)
+    ax1.set_xlabel("Rounds")
+    ax1.set_ylabel("Cumulative score")
+    ax2.set_ylabel("Progress")
+
+    title = u"Progress per round"
+    ax1.set_title(title)
+
+    #ax1.grid(True)
+    ax2.grid(True)
+
+    for tl in ax1.get_yticklabels():
+        tl.set_color('r')
+
+    for tl in ax2.get_yticklabels():
+        tl.set_color('b')
+
+
     canvas = FigureCanvas(fig)
     response = HttpResponse(content_type='image/png')
 

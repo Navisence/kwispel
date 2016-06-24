@@ -25,6 +25,7 @@
             </tr>
             {% endfor %}
           </table>
+
         {% else %}
           <p>No rounds are available.</p>
         {% endif %}
@@ -49,12 +50,23 @@
             </tr>
             {% endfor %}
           </table>
+
         {% else %}
           <p>No teams are available.</p>
         {% endif %}
         </div>
 
       </div> <!-- /row -->
+      <div class="row">
+        <div class="col-sm-6">
+          <img class="img-responsive img-rounded center-block" src="rnd_overview.png" />
+        </div>
+        <div class="col-sm-6">
+          <img class="img-responsive img-rounded center-block" src="team_overview.png" />
+        </div>
+      </div> <!-- /row -->
+
+
     <HR>
     Links: <a href="{% url 'kwis:ranking' %}">Ranking</a>, <a href="/admin/">Admin</a>
     </div> <!-- /container -->
