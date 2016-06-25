@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load i18n %}
 <html>
   <head>
     {% include "kwis/headerContent.html" %}
@@ -9,10 +10,10 @@
         <div class="col-sm-6">
         {% if round_list %}
           <table class="table table-condensed table-striped">
-            <caption>Overview of all rounds</caption>
+            <caption>{% trans "Overview of all rounds" %}</caption>
             <thead>
-              <th>Round</th>
-              <th>Progress</th>
+              <th>{% trans "Round" %}</th>
+              <th>{% trans "Progress" %}</th>
             </thead>
             {% for round, status in round_list %}
             <tr>
@@ -26,17 +27,17 @@
             {% endfor %}
           </table>
         {% else %}
-          <p>No rounds are available.</p>
+          <p>{% trans "No rounds are available." %}</p>
         {% endif %}
         </div>
     
         <div class="col-sm-6">
         {% if team_list %}
           <table class="table table-condensed table-striped">
-          <caption>Overview of all teams</caption>
+          <caption>{% trans "Overview of all teams" %}</caption>
             <thead>
-              <th>Team</th>
-              <th>Progress</th>
+              <th>{% trans "Team" %}</th>
+              <th>{% trans "Progress" %}</th>
             </thead>
             {% for team, status in team_list %}
             <tr>
@@ -50,13 +51,13 @@
             {% endfor %}
           </table>
         {% else %}
-          <p>No teams are available.</p>
+          <p>{% trans "No teams are available." %}</p>
         {% endif %}
         </div>
 
       </div> <!-- /row -->
     <HR>
-    Links: <a href="{% url 'kwis:ranking' %}">Ranking</a>, <a href="/admin/">Admin</a>
+    {% trans "Links:" %} <a href="{% url 'kwis:ranking' %}">{% trans "Ranking" %}</a>, <a href="/admin/">{% trans "Admin" %}</a>
     </div> <!-- /container -->
   </body>
 </html>

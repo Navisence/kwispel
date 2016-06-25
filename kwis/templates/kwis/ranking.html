@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load i18n %}
 <html>
   <head>
     {% include "kwis/headerContent.html" %}
@@ -12,9 +13,9 @@
               <caption>{{ caption }}</caption>
               <thead>
               <tr>
-                <th class="col-sm-2">Place</th>
-                <th class="col-sm-6">Team</th>
-                <th class="col-sm-2">Score</th>
+                <th class="col-sm-2">{% trans "Place" %}</th>
+                <th class="col-sm-6">{% trans "Team" %}</th>
+                <th class="col-sm-2">{% trans "Score" %}</th>
               </tr>
               </thead>
               {% for result in sorted %}
@@ -27,12 +28,12 @@
             </table>
           </div>
         {% else %}
-          <p>No sorted results found.</p>
+          <p>{% trans "No sorted results found." %}</p>
         {% endif %}
 
       </div> <!-- /row -->
     <HR>
-    Links: <a href="{% url 'kwis:index' %}">Index</a>, <a href="/admin/">Admin</a>
+    {% trans "Links:" %} <a href="{% url 'kwis:index' %}">{% trans "Index" %}</a>, <a href="/admin/">{% trans "Admin" %}</a>
     </div> <!-- /container -->
   </body>
 </html>
