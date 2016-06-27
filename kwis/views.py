@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django import forms
+from django.utils.translation import ugettext as _
 
 from decimal import *
 
@@ -31,7 +32,8 @@ def index(request):
     round_status = []
     for r in round_list:
         if r.qanswer_set.count() == team_list.count():
-            round_status.append((r, "Complete"))
+            # Translators: This indicates all scores for a round have been entered
+            round_status.append((r, _("Complete")))
         else:
             round_status.append((r, "%d / %d" % (r.qanswer_set.count(), team_list.count())))
 
@@ -58,11 +60,13 @@ def ranking(request):
             rnd_complete.append(rnd)
 
     if len(rnd_complete) == QRound.objects.count():
-        caption = "Final ranking"
+        # Translators: This indicates all scores for all rounds have been entered
+        caption = _("Final ranking")
     elif len(rnd_complete) == 0:
-        caption = "No results yet"
+        # Translators: This indicates no round has all scores entered
+        caption = _("No results yet")
     else:
-        caption = "Ranking after "
+        caption = _("Ranking after ")
         for rnd in rnd_complete:
             caption += rnd.round_name + ", "
         caption = caption[:-2]
