@@ -48,10 +48,8 @@ msgstr "Overzicht"
 #: kwis/templates/kwis/form.html:44 kwis/templates/kwis/index.html:60
 #: kwis/templates/kwis/rnd_detail.html:56
 #: kwis/templates/kwis/team_detail.html:55
-#, fuzzy
-#| msgid "Ranking after "
 msgid "Ranking"
-msgstr "Rangschikking na "
+msgstr "Rangschikking"
 
 #: kwis/templates/kwis/form.html:45 kwis/templates/kwis/index.html:60
 #: kwis/templates/kwis/ranking.html:36 kwis/templates/kwis/rnd_detail.html:57
@@ -93,7 +91,7 @@ msgstr "Geen gesorteerde resultaten gevonden."
 
 #: kwis/templates/kwis/team_detail.html:16
 msgid "Subtotal:"
-msgstr "Sutotaal:"
+msgstr "Subtotaal:"
 
 #. Translators: This indicates all scores for a round have been entered
 #: kwis/views.py:31
