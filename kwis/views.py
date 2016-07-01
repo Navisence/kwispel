@@ -13,6 +13,11 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 
+# Dictionary to define color usage in graphs
+colors  = {'score_good': 'green',
+        'score_bad': 'red',
+        'empty':'lightblue'}
+
 class PostedForm(forms.Form):
     score = forms.DecimalField(max_digits=6, decimal_places=1)
 
@@ -182,8 +187,8 @@ def team_result(request, team_id):
     width = 0.25
 
     # Draw vertical bars
-    ax.bar(ind, scores, width, color='b')
-    ax.bar(ind, maxima, width, color='w', bottom=scores)
+    ax.bar(ind, scores, width, color=colors['score_good'])
+    ax.bar(ind, maxima, width, color=colors['score_bad'], bottom=scores)
 
     # Set labels and title
     ax.set_xticks(ind + width/2)
@@ -220,15 +225,13 @@ def rnd_result(request, rnd_id):
     width = 0.25
 
     # Draw vertical bar
-    ax.barh(ind, scores, width, color='b')
+    ax.barh(ind, scores, width, color=colors['score_good'])
 
     # Set labels and title
     ax.set_yticks(ind + width/2)
     ax.set_yticklabels(names)
     ax.set_ylabel("Teams")
     ax.set_xlabel("Scores")
-
-    #ax.tight_layout()
 
     title = u"Scores for %s" % arnd.round_name
     ax.set_title(title)
@@ -266,8 +269,8 @@ def team_overview(request):
     width = 0.25
 
     # Draw bars
-    ax1.bar(ind, subtotals, width, color='r')
-    ax1.bar(ind, maxtotals, width, color='y', bottom=subtotals)
+    ax1.bar(ind, subtotals, width, color=colors['score_good'])
+    ax1.bar(ind, maxtotals, width, color=colors['score_bad'], bottom=subtotals)
 
     # Set labels and title
     ax1.set_xticks(ind + width/2)
@@ -280,8 +283,9 @@ def team_overview(request):
     ax1.set_title(title)
 
     ax1.grid(True)
-    #ax2.grid(True)
 
+    for tl in ax1.get_yticklabels():
+        tl.set_color(colors['score_good'])
 
     canvas = FigureCanvas(fig)
     response = HttpResponse(content_type='image/png')
@@ -290,10 +294,8 @@ def team_overview(request):
     return response
 
 def rnd_overview(request):
-    fig = Figure()
-    fig.set_tight_layout(True)
-    ax1 = fig.add_subplot(1,1,1)
-    ax2 = ax1.twinx()
+    import numpy as np
+    import matplotlib.pyplot as plt
 
     # Number of teams determines max level of round completion
     nbTeams = QTeam.objects.count()
@@ -302,50 +304,55 @@ def rnd_overview(request):
     ind = matplotlib.numpy.arange(QRound.objects.count())
 
     # Progress per round
-    completion = []
-    remaining  = []
-    scores     = []
-    maxima     = []
-    names      = []
+    names      = [] # Round names
+    scores     = [] # Effectively obtained by all teams per round
+    maxima     = [] # maxima for the already entered teams
+    difference = [] # difference between maxima and scores obtained
+    remaining  = [] # max scores for teams not yet entered
+    data       = [] # raw score data in % for boxplot
     for r in QRound.objects.all():
-        rc = r.qanswer_set.count()
-        completion.append(rc)
-        remaining.append(nbTeams - rc)
         names.append(r.round_name)
+        rc = r.qanswer_set.count()
 
         rs = 0
+        datalist = []
         for a in r.qanswer_set.all():
             rs += a.score
+            datalist.append(float(a.score)/float(r.max_score))
         scores.append(rs)
-        maxima.append(r.max_score * r.qanswer_set.count() - rs)
+        maxima.append(r.max_score * rc)
+        difference.append(r.max_score * rc - rs)
+        remaining.append(r.max_score * (nbTeams - rc))
+        data.append(datalist)
 
-    width = 0.25
+    # The image
+    fig, ax1 = plt.subplots(1,1)
+    ax2 = ax1.twinx()
 
     # Draw bars
-    ax1.bar(ind, scores, width, color='r')
-    ax1.bar(ind, maxima, width, color='y', bottom=scores)
-    ax2.bar(ind+width, completion, width, color='b')
-    ax2.bar(ind+width, remaining, width, color='w', bottom=completion)
+    width = 0.25
+    ax1.bar(ind-width, scores, width, color=colors['score_good'])
+    ax1.bar(ind-width, difference, width, color=colors['score_bad'], bottom=scores)
+    ax1.bar(ind-width, remaining, width, color=colors['empty'], bottom=maxima)
+    ax2.boxplot(data, widths=width, positions=ind+width, showmeans=True)
 
     # Set labels and title
-    ax1.set_xticks(ind + width)
+    ax1.set_xticks(ind)
     ax1.set_xticklabels(names)
     ax1.set_xlabel("Rounds")
-    ax1.set_ylabel("Cumulative score")
-    ax2.set_ylabel("Progress")
+    ax1.set_ylabel("Cumulative scores and progress")
+    ax2.set_ylabel("Statistics")
 
     title = u"Progress per round"
     ax1.set_title(title)
 
-    #ax1.grid(True)
-    ax2.grid(True)
+    ax1.grid(True)
 
     for tl in ax1.get_yticklabels():
-        tl.set_color('r')
+        tl.set_color(colors['score_good'])
 
     for tl in ax2.get_yticklabels():
-        tl.set_color('b')
-
+        tl.set_color(colors['score_bad'])
 
     canvas = FigureCanvas(fig)
     response = HttpResponse(content_type='image/png')
