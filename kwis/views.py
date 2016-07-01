@@ -274,8 +274,7 @@ def team_overview(request):
 
     # Set labels and title
     ax1.set_xticks(ind + width/2)
-    #ax1.set_xticklabels(names)
-    ax1.set_xticklabels(ind)
+    ax1.set_xticklabels(names, rotation="-25", ha='left')
     ax1.set_xlabel("Teams")
     ax1.set_ylabel("Cumulative score")
 
@@ -327,21 +326,25 @@ def rnd_overview(request):
 
     # The image
     fig, ax1 = plt.subplots(1,1)
+    fig.set_tight_layout(True)
     ax2 = ax1.twinx()
 
     # Draw bars
     width = 0.25
-    ax1.bar(ind-width, scores, width, color=colors['score_good'])
-    ax1.bar(ind-width, difference, width, color=colors['score_bad'], bottom=scores)
-    ax1.bar(ind-width, remaining, width, color=colors['empty'], bottom=maxima)
-    ax2.boxplot(data, widths=width, positions=ind+width, showmeans=True)
+    barlocation = ind-width
+    boxlocation = ind+width
+    ax1.bar(barlocation, scores, width, color=colors['score_good'])
+    ax1.bar(barlocation, difference, width, color=colors['score_bad'], bottom=scores)
+    ax1.bar(barlocation, remaining, width, color=colors['empty'], bottom=maxima)
+    ax2.boxplot(data, widths=width, positions=boxlocation, showmeans=True)
 
     # Set labels and title
     ax1.set_xticks(ind)
-    ax1.set_xticklabels(names)
+    ax1.set_xticklabels(names, rotation="-25", ha='left')
     ax1.set_xlabel("Rounds")
     ax1.set_ylabel("Cumulative scores and progress")
     ax2.set_ylabel("Statistics")
+    ax2.set_ylim([0,1])
 
     title = u"Progress per round"
     ax1.set_title(title)
