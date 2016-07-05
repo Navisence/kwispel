@@ -74,7 +74,7 @@ def ranking(request):
         caption = _("Ranking after ")
         for rnd in rnd_complete:
             caption += rnd.round_name + ", "
-        caption = caption[:-2]
+        caption = caption[:-2] # Remove final ", "
 
     result = []
     for team in QTeam.objects.all():
@@ -88,7 +88,16 @@ def ranking(request):
     # Sort
     sorted_result = sorted(result, reverse=True, key=lambda tup: tup[1])
 
-    return render(request, 'kwis/ranking.html', {'sorted': sorted_result, 'caption': caption})
+    rank, count, previous, ranked_result = 0, 0, None, []
+    for key, num in sorted_result:
+        count += 1
+        if num != previous:
+            rank += count
+            previous = num
+            count = 0
+        ranked_result.append((rank, key, num))
+
+    return render(request, 'kwis/ranking.html', {'sorted': ranked_result, 'caption': caption})
 
 # Detail views allow to view results per round or per team
 def rnd_detail(request, rnd_id):

@@ -7,13 +7,13 @@ from django.db import models
 
 class QTeam(models.Model):
     # A team only needs a name for identification
-    team_name = models.CharField(max_length=200)
+    team_name = models.CharField(max_length=200, unique=True)
     def __str__(self):
         return self.team_name
 
 class QRound(models.Model):
     # Each round has a name and a maximal score
-    round_name = models.CharField(max_length=200)
+    round_name = models.CharField(max_length=200, unique=True)
     max_score = models.DecimalField(max_digits=6, decimal_places=1)
     def __str__(self):
         return self.round_name + ": " + str(self.max_score)
