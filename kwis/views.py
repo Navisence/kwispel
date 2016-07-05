@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django import forms
 from django.utils.translation import ugettext as _
+from django.contrib.auth.decorators import login_required
 
 from decimal import *
 
@@ -90,6 +91,7 @@ def ranking(request):
     return render(request, 'kwis/ranking.html', {'sorted': ranked_result, 'caption': caption})
 
 # Detail views allow to view results per round or per team
+@login_required
 def rnd_detail(request, rnd_id):
     rnd = get_object_or_404(QRound, pk=rnd_id)
 
@@ -108,6 +110,7 @@ def rnd_detail(request, rnd_id):
 
     return render(request, 'kwis/rnd_detail.html', {'rnd': rnd, 'team_list_todo': team_list_todo, 'form': form})
 
+@login_required
 def team_detail(request, team_id):
     # Check if team entry exists
     team = get_object_or_404(QTeam, pk=team_id)
@@ -130,6 +133,7 @@ def team_detail(request, team_id):
     return render(request, 'kwis/team_detail.html', {'team': team, 'subtotal': subtotal, 'maxtotal': maxtotal, 'round_list_todo': round_list_todo})
 
 # The vote view handles the POST requests
+@login_required
 def vote(request, rnd_id, team_id):
     # check for existing rnd and team
     arnd  = get_object_or_404(QRound, pk=rnd_id)
