@@ -248,7 +248,6 @@ def team_overview(request):
     fig = Figure()
     fig.set_tight_layout(True)
     ax1 = fig.add_subplot(1,1,1)
-    #ax2 = ax1.twinx()
 
     # Cumulative scores per team
     ind = matplotlib.numpy.arange(QTeam.objects.count())
@@ -266,7 +265,7 @@ def team_overview(request):
         maxtotals.append(maxtotal - subtotal)
         names.append(t.team_name)
 
-    width = 0.25
+    width = 0.5
 
     # Draw bars
     ax1.bar(ind, subtotals, width, color=colors['score_good'])
