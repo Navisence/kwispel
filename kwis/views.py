@@ -9,16 +9,13 @@ from decimal import *
 
 from .models import QRound, QTeam, QAnswer
 
-import matplotlib
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
-
 
 # Dictionary to define color usage in graphs
 colors  = {'score_good': 'green',
         'score_bad': 'red',
         'empty':'lightblue'}
 
+# Helper classes for forms
 class PostedForm(forms.Form):
     score = forms.DecimalField(max_digits=6, decimal_places=1)
 
@@ -29,9 +26,51 @@ class ScoreForm(forms.Form):
 
     score = forms.DecimalField(max_digits=6, decimal_places=1, min_value=0)
 
+# Useful common functions
+def get_completed_rounds():
+    """
+    Return a list of rounds that are completed by all teams.
+    A completed round has as much elements in its qanswer_set as there are participating teams.
+    """
+    result = []
+    for rnd in QRound.objects.all():
+        if rnd.qanswer_set.count() == QTeam.objects.count():
+            result.append(rnd)
+    return result
+
+def get_ranked_results(completed_rounds):
+    """
+    For the rounds given in completed_rounds, calculate the total score for each team.
+    Then all teams are sorted on total score and are given a ranking to allow for ex aequo scores.
+    """
+    results = []
+    for team in QTeam.objects.all():
+        teamtotal = 0
+        for a in team.qanswer_set.all():
+            # Only add results for complete rounds
+            if a.rnd in completed_rounds:
+                teamtotal += a.score
+        results.append((team.team_name, teamtotal))
+
+    # Sort the results
+    sorted_results = sorted(results, reverse=True, key=lambda tup: tup[1])
+
+    rank, count, previous, ranking = 0, 0, None, []
+    for key, num in sorted_results:
+        count += 1
+        if num != previous:
+            rank += count
+            previous = num
+            count = 0
+        ranking.append((rank, key, num))
+
+    return ranking
+
 #   Initial views contain overviews only
 def index(request):
-    # List all teams and all rounds. This is the main jury view from where to add scores
+    """
+    List all teams and all rounds. This is the main jury view from where to add scores
+    """
     round_list = QRound.objects.all()
     team_list = QTeam.objects.all()
 
@@ -56,14 +95,12 @@ def index(request):
     return render(request, 'kwis/index.html', context)
 
 def ranking(request):
-    # This is the main view for contestants: ranking of teams based on their results
+    """
+    This is the main view for contestants: ranking of teams based on their results
+    """
 
-    # First identify completed rounds. A completed round has as much elements in its
-    # qanswer_set as there are participating teams.
-    rnd_complete = []
-    for rnd in QRound.objects.all():
-        if rnd.qanswer_set.count() == QTeam.objects.count():
-            rnd_complete.append(rnd)
+    # First identify completed rounds.
+    rnd_complete = get_completed_rounds()
 
     if len(rnd_complete) == QRound.objects.count():
         # Translators: This indicates all scores for all rounds have been entered
@@ -77,32 +114,15 @@ def ranking(request):
             caption += rnd.round_name + ", "
         caption = caption[:-2] # Remove final ", "
 
-    result = []
-    for team in QTeam.objects.all():
-        teamtotal = 0
-        for a in team.qanswer_set.all():
-            # Only add results for complete rounds
-            if a.rnd in rnd_complete:
-                teamtotal += a.score
-        result.append((team.team_name, teamtotal))
+    ranking = get_ranked_results(rnd_complete)
 
-    # Sort
-    sorted_result = sorted(result, reverse=True, key=lambda tup: tup[1])
+    return render(request, 'kwis/ranking.html', {'sorted': ranking, 'caption': caption})
 
-    rank, count, previous, ranked_result = 0, 0, None, []
-    for key, num in sorted_result:
-        count += 1
-        if num != previous:
-            rank += count
-            previous = num
-            count = 0
-        ranked_result.append((rank, key, num))
-
-    return render(request, 'kwis/ranking.html', {'sorted': ranked_result, 'caption': caption})
-
-# Detail views allow to view results per round or per team
 @login_required
 def rnd_detail(request, rnd_id):
+    """
+    Detail views allow to view results per round or per team
+    """
     rnd = get_object_or_404(QRound, pk=rnd_id)
 
     # Filter a list of answers for this round
@@ -122,6 +142,9 @@ def rnd_detail(request, rnd_id):
 
 @login_required
 def team_detail(request, team_id):
+    """
+    Detail views allow to view results per round or per team
+    """
     # Check if team entry exists
     team = get_object_or_404(QTeam, pk=team_id)
 
@@ -142,9 +165,11 @@ def team_detail(request, team_id):
 
     return render(request, 'kwis/team_detail.html', {'team': team, 'subtotal': subtotal, 'maxtotal': maxtotal, 'round_list_todo': round_list_todo})
 
-# The vote view handles the POST requests
 @login_required
 def vote(request, rnd_id, team_id):
+    """
+    The vote view handles the POST requests
+    """
     # check for existing rnd and team
     arnd  = get_object_or_404(QRound, pk=rnd_id)
     ateam = get_object_or_404(QTeam, pk=team_id)
@@ -181,35 +206,40 @@ def vote(request, rnd_id, team_id):
     return render(request, 'kwis/form.html', {'rnd': arnd, 'team': ateam, 'form': form})
 
 def team_result(request, team_id):
-    fig = Figure()
-    fig.set_tight_layout(True)
-    ax = fig.add_subplot(1,1,1)
+    """
+    """
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
     # Retrieve team info and scores for the team
     ateam = get_object_or_404(QTeam, pk=team_id)
     answers = ateam.qanswer_set.order_by('rnd')
 
     # Set number of vertical bars
-    ind = matplotlib.numpy.arange(len(answers))
+    ind = np.arange(len(answers))
 
     # Retrieve score, max score and name per round
     scores = [answer.score for answer in answers]
     maxima = [(answer.rnd.max_score - answer.score) for answer in answers]
     names  = [answer.rnd.round_name for answer in answers]
 
-    width = 0.25
+    # The image
+    fig, ax = plt.subplots(1,1)
+    fig.set_tight_layout(True)
 
     # Draw vertical bars
+    width = 0.25
     ax.bar(ind, scores, width, color=colors['score_good'])
     ax.bar(ind, maxima, width, color=colors['score_bad'], bottom=scores)
 
     # Set labels and title
     ax.set_xticks(ind + width/2)
     ax.set_xticklabels(names)
-    ax.set_xlabel("Rounds")
-    ax.set_ylabel("Scores")
+    ax.set_xlabel(_("Rounds"))
+    ax.set_ylabel(_("Scores"))
 
-    title = u"Scores for %s" % ateam.team_name
+    title = _(u"Scores for %s") % ateam.team_name
     ax.set_title(title)
 
     ax.grid(True)
@@ -220,33 +250,38 @@ def team_result(request, team_id):
     return response
 
 def rnd_result(request, rnd_id):
-    fig = Figure()
-    fig.set_tight_layout(True)
-    ax = fig.add_subplot(1,1,1)
+    """
+    """
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
     # Retrieve round info and scores for round
     arnd = get_object_or_404(QRound, pk=rnd_id)
     answers = arnd.qanswer_set.order_by('-team')
 
     # Set number of vertical bars
-    ind = matplotlib.numpy.arange(len(answers))
+    ind = np.arange(len(answers))
 
     # Retrieve score and team name per round
     scores = [answer.score for answer in answers]
     names  = [answer.team.team_name for answer in answers]
 
-    width = 0.25
+    # The image
+    fig, ax = plt.subplots(1,1)
+    fig.set_tight_layout(True)
 
     # Draw vertical bar
+    width = 0.25
     ax.barh(ind, scores, width, color=colors['score_good'])
 
     # Set labels and title
     ax.set_yticks(ind + width/2)
     ax.set_yticklabels(names)
-    ax.set_ylabel("Teams")
-    ax.set_xlabel("Scores")
+    ax.set_ylabel(_("Teams"))
+    ax.set_xlabel(_("Scores"))
 
-    title = u"Scores for %s" % arnd.round_name
+    title = _(u"Scores for %s") % arnd.round_name
     ax.set_title(title)
 
     ax.grid(True)
@@ -258,12 +293,14 @@ def rnd_result(request, rnd_id):
     return response
 
 def team_overview(request):
-    fig = Figure()
-    fig.set_tight_layout(True)
-    ax1 = fig.add_subplot(1,1,1)
+    """
+    """
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
     # Cumulative scores per team
-    ind = matplotlib.numpy.arange(QTeam.objects.count())
+    ind = np.arange(QTeam.objects.count())
 
     subtotals = []
     maxtotals = []
@@ -278,24 +315,27 @@ def team_overview(request):
         maxtotals.append(maxtotal - subtotal)
         names.append(t.team_name)
 
-    width = 0.5
+    # The image
+    fig, ax = plt.subplots(1,1)
+    fig.set_tight_layout(True)
 
     # Draw bars
-    ax1.bar(ind, subtotals, width, color=colors['score_good'])
-    ax1.bar(ind, maxtotals, width, color=colors['score_bad'], bottom=subtotals)
+    width = 0.5
+    ax.bar(ind, subtotals, width, color=colors['score_good'])
+    ax.bar(ind, maxtotals, width, color=colors['score_bad'], bottom=subtotals)
 
     # Set labels and title
-    ax1.set_xticks(ind + width/2)
-    ax1.set_xticklabels(names, rotation="-25", ha='left')
-    ax1.set_xlabel("Teams")
-    ax1.set_ylabel("Cumulative score")
+    ax.set_xticks(ind + width/2)
+    ax.set_xticklabels(names, rotation="-25", ha='left')
+    ax.set_xlabel(_("Teams"))
+    ax.set_ylabel(_("Cumulative score"))
 
-    title = u"Progress per team"
-    ax1.set_title(title)
+    title = _(u"Progress per team")
+    ax.set_title(title)
 
-    ax1.grid(True)
+    ax.grid(True)
 
-    for tl in ax1.get_yticklabels():
+    for tl in ax.get_yticklabels():
         tl.set_color(colors['score_good'])
 
     canvas = FigureCanvas(fig)
@@ -305,14 +345,17 @@ def team_overview(request):
     return response
 
 def rnd_overview(request):
+    """
+    """
     import numpy as np
     import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
     # Number of teams determines max level of round completion
     nbTeams = QTeam.objects.count()
 
     # Number of bars
-    ind = matplotlib.numpy.arange(QRound.objects.count())
+    ind = np.arange(QRound.objects.count())
 
     # Progress per round
     names      = [] # Round names
@@ -353,12 +396,12 @@ def rnd_overview(request):
     # Set labels and title
     ax1.set_xticks(ind)
     ax1.set_xticklabels(names, rotation="-25", ha='left')
-    ax1.set_xlabel("Rounds")
-    ax1.set_ylabel("Cumulative scores and progress")
-    ax2.set_ylabel("Statistics")
+    ax1.set_xlabel(_("Rounds"))
+    ax1.set_ylabel(_("Cumulative scores and progress"))
+    ax2.set_ylabel(_("Statistics"))
     ax2.set_ylim([0,1])
 
-    title = u"Progress per round"
+    title = _(u"Progress per round")
     ax1.set_title(title)
 
     ax1.grid(True)
@@ -368,6 +411,71 @@ def rnd_overview(request):
 
     for tl in ax2.get_yticklabels():
         tl.set_color(colors['score_bad'])
+
+    canvas = FigureCanvas(fig)
+    response = HttpResponse(content_type='image/png')
+
+    canvas.print_png(response)
+    return response
+
+def ranking_overview(request):
+    """
+    Show history of rankings for top N teams in current ranking
+    """
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
+    # Check which rounds are complete
+    rnd_complete = get_completed_rounds()
+
+    # Calculate ranking after each of these rounds
+    increment_rnds = []
+    ranking_matrix = []
+    round_names    = []
+
+    for comprnd in rnd_complete:
+        increment_rnds.append(comprnd)
+        ranking = get_ranked_results(increment_rnds)
+        ranking_matrix.append(ranking)
+        round_names.append(comprnd.round_name)
+
+    # Team leading after most recent round: compose line with rankings over all other rounds
+    # next team idem until all N lines composed
+    N = 5 # Number of top teams to track
+    top_positions = []
+    team_names    = []
+    for i in range(N):
+        position_list = []
+        # Find the name of the team that finished N + 1
+        tn = ranking_matrix[-1][i][1]
+        # Find the positions of this team over all rounds
+        for ranking in ranking_matrix:
+            ti = [x for x in ranking if tn in x][0]
+            position_list.append(ranking.index(ti) + 1)
+
+        top_positions.append(position_list)
+        team_names.append(tn)
+
+    # matrix transpose for easier plotting
+    position_sequence = [list(i) for i in zip(*top_positions)]
+
+    # The image
+    fig, ax1 = plt.subplots(1,1,figsize=(7,7))
+    fig.set_tight_layout(True)
+
+    # Invert y axis so that leading team is on top
+    ax1.invert_yaxis()
+
+    ax1.plot(position_sequence, linewidth=2)
+    ind = np.arange(len(round_names))
+    ax1.set_xticks(ind)
+    ax1.set_xticklabels(round_names)
+    ax1.tick_params(axis='both', which='both', labelbottom=True, labeltop=False, labelleft=True, labelright=True)
+    ax1.set_xlabel(_("Round"))
+    ax1.set_ylabel(_("Position"))
+    ax1.legend(team_names, loc='best')
+    ax1.grid(True)
 
     canvas = FigureCanvas(fig)
     response = HttpResponse(content_type='image/png')
