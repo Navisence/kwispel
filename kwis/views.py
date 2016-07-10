@@ -445,17 +445,18 @@ def ranking_overview(request):
     N = 5 # Number of top teams to track
     top_positions = []
     team_names    = []
-    for i in range(N):
-        position_list = []
-        # Find the name of the team that finished N + 1
-        tn = ranking_matrix[-1][i][1]
-        # Find the positions of this team over all rounds
-        for ranking in ranking_matrix:
-            ti = [x for x in ranking if tn in x][0]
-            position_list.append(ranking.index(ti) + 1)
+    if ranking_matrix:
+        for i in range(N):
+            position_list = []
+            # Find the name of the team that finished N + 1
+            tn = ranking_matrix[-1][i][1]
+            # Find the positions of this team over all rounds
+            for ranking in ranking_matrix:
+                ti = [x for x in ranking if tn in x][0]
+                position_list.append(ranking.index(ti) + 1)
 
-        top_positions.append(position_list)
-        team_names.append(tn)
+            top_positions.append(position_list)
+            team_names.append(tn)
 
     # matrix transpose for easier plotting
     position_sequence = [list(i) for i in zip(*top_positions)]
