@@ -66,6 +66,14 @@ def get_ranked_results(completed_rounds):
 
     return ranking
 
+def dynamic_rotation(nbObjects):
+    if nbObjects <= 10:
+        return "-25"
+    elif nbObjects <= 20:
+        return "-35"
+    else:
+        return "-45"
+
 #   Initial views contain overviews only
 def index(request):
     """
@@ -326,7 +334,7 @@ def team_overview(request):
 
     # Set labels and title
     ax.set_xticks(ind + width/2)
-    ax.set_xticklabels(names, rotation="-25", ha='left')
+    ax.set_xticklabels(names, rotation=dynamic_rotation(QTeam.objects.count()), ha='left')
     ax.set_xlabel(_("Teams"))
     ax.set_ylabel(_("Cumulative score"))
 
@@ -395,7 +403,7 @@ def rnd_overview(request):
 
     # Set labels and title
     ax1.set_xticks(ind)
-    ax1.set_xticklabels(names, rotation="-25", ha='left')
+    ax1.set_xticklabels(names, rotation=dynamic_rotation(QRound.objects.count()), ha='left')
     ax1.set_xlabel(_("Rounds"))
     ax1.set_ylabel(_("Cumulative scores and progress"))
     ax2.set_ylabel(_("Statistics"))
