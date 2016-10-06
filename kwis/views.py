@@ -9,6 +9,14 @@ from decimal import *
 
 from .models import QRound, QTeam, QAnswer
 
+# Imports needed to generate graphs
+import matplotlib as mpl
+mpl.use('Agg') # make sure no X backend is used
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
 
 # Dictionary to define color usage in graphs
 colors  = {'score_good': 'green',
@@ -215,10 +223,8 @@ def vote(request, rnd_id, team_id):
 
 def team_result(request, team_id):
     """
+    Plot results per team
     """
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
     # Retrieve team info and scores for the team
     ateam = get_object_or_404(QTeam, pk=team_id)
@@ -259,10 +265,8 @@ def team_result(request, team_id):
 
 def rnd_result(request, rnd_id):
     """
+    Plot results per round
     """
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
     # Retrieve round info and scores for round
     arnd = get_object_or_404(QRound, pk=rnd_id)
@@ -302,10 +306,8 @@ def rnd_result(request, rnd_id):
 
 def team_overview(request):
     """
+    Plot overview of all teams
     """
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
     # Cumulative scores per team
     ind = np.arange(QTeam.objects.count())
@@ -354,10 +356,8 @@ def team_overview(request):
 
 def rnd_overview(request):
     """
+    Plot overview of all rounds
     """
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
     # Number of teams determines max level of round completion
     nbTeams = QTeam.objects.count()
@@ -430,9 +430,6 @@ def ranking_overview(request):
     """
     Show history of rankings for top N teams in current ranking
     """
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
     # Check which rounds are complete
     rnd_complete = get_completed_rounds()
