@@ -15,6 +15,7 @@ Early development
  * python3
  * django
  * django-bootstrap3
+ * numpy
  * matplotlib
 
 ## Startup
