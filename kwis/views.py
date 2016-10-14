@@ -448,6 +448,9 @@ def ranking_overview(request):
     # Team leading after most recent round: compose line with rankings over all other rounds
     # next team idem until all N lines composed
     N = 5 # Number of top teams to track
+    if QTeam.objects.count() < N:
+        # Limit N to the amount of teams
+        N = QTeam.objects.count()
     top_positions = []
     team_names    = []
     if ranking_matrix:
