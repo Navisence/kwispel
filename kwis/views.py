@@ -105,7 +105,8 @@ def index(request):
         for ts in t.qanswer_set.all():
             subtotal += ts.score
             maxtotal += ts.rnd.max_score
-        team_status.append((t, "%.1f / %.1f" % (subtotal, maxtotal)))
+        team_status.append((t, "%.1f / %.1f" % (subtotal, maxtotal), subtotal))
+    team_status.sort(key=lambda tup: tup[2], reverse = True)
 
     context = {'round_list': round_status, 'team_list': team_status}
     return render(request, 'kwis/index.html', context)

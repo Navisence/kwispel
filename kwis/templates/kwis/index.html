@@ -40,7 +40,7 @@
               <th>{% trans "Team" %}</th>
               <th>{% trans "Progress" %}</th>
             </thead>
-            {% for team, status in team_list %}
+            {% for team, status, subtot in team_list %}
             <tr>
               <td>
                 <a href="{% url 'kwis:team_detail' team.id %}">{{ team.team_name }}</a>
