@@ -2,7 +2,11 @@
 {% load i18n %}
 <html>
   <head>
-    {% include "kwis/headerContent.html" %}
+{% include "kwis/headerContent.html" %}
+    <meta http-equiv="refresh" content="60">
+    <style>
+      body { font-size: 15px; }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -27,7 +31,7 @@
               {% endfor %}
             </table>
           </div>
-	  <div class="row">
+          <div class="row">
             <a href="/kwis/ranking/overview.png"><img class="img-responsive img-rounded center-block" src="/kwis/ranking/overview.png" /></a>
           </div>
         {% else %}
