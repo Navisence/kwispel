@@ -146,7 +146,7 @@ def rnd_detail(request, rnd_id):
 
     # Create a list of teams that don't have a score in this round yet
     team_list_todo = []
-    for t in QTeam.objects.all():
+    for t in QTeam.objects.order_by('team_name'):
         if ar.filter(team = t).count() == 0:
             team_list_todo.append(t)
     # Teams that already have a score in this round can be accessed from the template using the _set
@@ -270,7 +270,7 @@ def rnd_result(request, rnd_id):
 
     # Retrieve round info and scores for round
     arnd = get_object_or_404(QRound, pk=rnd_id)
-    answers = arnd.qanswer_set.order_by('-team')
+    answers = arnd.qanswer_set.order_by('-score')
 
     # Set number of vertical bars
     ind = np.arange(len(answers))
@@ -324,6 +324,10 @@ def team_overview(request):
         subtotals.append(subtotal)
         maxtotals.append(maxtotal - subtotal)
         names.append(t.team_name)
+
+    zipped = list(zip(subtotals, maxtotals, names))
+    zipped.sort()
+    subtotals, maxtotals, names = zip(*zipped)
 
     # The image
     fig, ax = plt.subplots(1,1)
