@@ -42,7 +42,7 @@
               <a href="{% url 'kwis:team_detail' answer.team.id %}">{{ answer.team.team_name }}</a>
             </td>
             <td>
-              <a href="{% url 'kwis:vote' answer.rnd.id answer.team.id %}">({{ answer.score }})</a>
+              <a href="{% url 'kwis:vote' answer.rnd.id answer.team.id %}">{{ answer.score }}</a>
             </td>
             <td>
             </td>
