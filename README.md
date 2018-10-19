@@ -22,5 +22,16 @@ Early development
 After installation, run the following commands:
  * django-admin compilemessages
  * manage.py migrate
+ * manage.py collectstatic
  * manage.py createsuperuser
  * manage.py runserver
+
+## Static files
+To serve static files directly from nginx, add a snippet like the following
+to the nginx server configuration.
+
+```
+location /static {
+    alias /path/to/static;
+}
+```
