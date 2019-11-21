@@ -328,7 +328,8 @@ def team_overview(request):
 
     zipped = list(zip(subtotals, maxtotals, names))
     zipped.sort()
-    subtotals, maxtotals, names = zip(*zipped)
+    if zipped:
+        subtotals, maxtotals, names = zip(*zipped)
 
     # The image
     fig, ax = plt.subplots(1,1)
@@ -404,7 +405,8 @@ def rnd_overview(request):
     ax1.bar(barlocation, scores, width, color=colors['score_good'])
     ax1.bar(barlocation, difference, width, color=colors['score_bad'], bottom=scores)
     ax1.bar(barlocation, remaining, width, color=colors['empty'], bottom=maxima)
-    ax2.boxplot(data, widths=width, positions=boxlocation, showmeans=True)
+    if data:
+        ax2.boxplot(data, widths=width, positions=boxlocation, showmeans=True)
 
     # Set labels and title
     ax1.set_xticks(ind)
