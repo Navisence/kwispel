@@ -21,6 +21,8 @@ class QRound(models.Model):
     max_score = models.DecimalField(max_digits=6, decimal_places=1)
     def __str__(self):
         return self.round_name + ": " + str(self.max_score)
+    #def ordered_set(self):
+        #return self.round_name.all().order_by(self.
     class Meta:
         verbose_name = _('Round')
         verbose_name_plural = _('Rounds')

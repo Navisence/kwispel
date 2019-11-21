@@ -22,6 +22,7 @@
                 <th class="col-sm-2">{% trans "Score" %}</th>
               </tr>
               </thead>
+	  {% if sorted|length > 20 %}
               {% for result in sorted %}
               <tr>
                 <td class="text-right">{{ result.0 }}</td>
@@ -30,7 +31,14 @@
                 <td>{{ result.2 }}</td>
               </tr>
               {% endfor %}
+	  {% else %}
+	  <tr><td><img src="/media/ballot.svg" height="20"></td><td>longlist</td><td></td></tr>
+	  <!-- https://stackoverflow.com/questions/6571966/how-do-i-get-odd-and-even-values-in-a-django-for-loop-template/6572051 -->
+	  {% endif %}
             </table>
+	  </div> <!-- row -->
+          <div class="row">
+            <a href="/kwis/ranking/overview.png"><img class="img-responsive img-rounded center-block" src="/kwis/ranking/overview.png" /></a>
 	  </div> <!-- row -->
         {% else %}
           <p>{% trans "No sorted results found." %}</p>
