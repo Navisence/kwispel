@@ -1,5 +1,5 @@
 # kwispel
-kwispel is a Django app to manage quiz results and show rankings
+*kwispel* is a Django app to manage quiz results and show rankings
 
 ## Features
  * Enter teams and rounds by name using the standard Django admin interface
@@ -9,7 +9,7 @@ kwispel is a Django app to manage quiz results and show rankings
  * i18n supported with English and Dutch to start with
 
 ## Status
-Early development
+Usable if you're not afraid of some manual configuration (see below).
 
 ## Requirements
  * python3
@@ -35,3 +35,16 @@ location /static {
     alias /path/to/static;
 }
 ```
+
+## Production settings
+Check the kwispel/settings.py file and add the hostname(s) that will be used
+to access the site to the ALLOWED\_HOSTS list.
+
+The SECURE\_PROXY\_SSL\_HEADER is needed if you want to forward traffic from e.g.
+an nginx instance that serves as SSL termination.
+
+## Startup using uwsgi
+Instead of the last step before (`manage.py runserver`), run
+uwsgi --ini kwispel\_uwsgi.ini
+Read more on Django+uwsgi+Nginx on https://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html
+
