@@ -5,13 +5,12 @@
     {% include "kwis/headerContent.html" %}
   </head>
   <body>
-    <div class="container">
-      <div class="row">
+    <div class="uk-container">
         <h1>{{ rnd.round_name }}</h1>
         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-      </div> <!-- /row -->
     
-      <div class="row">
+      <div class="uk-child-width-1-2@m" uk-grid>
+      <div>
         <table class="table table-condensed table-striped">
           <caption>{% trans "Max score this round:" %} {{ rnd.max_score }}</caption>
           <thead>
@@ -37,7 +36,8 @@
             </form>
           </tr>
         </table>
-      </div> <!-- /row -->
+      </div>
+      </div>
     
       <HR>
       {% trans "Links:" %} <a href="{% url 'kwis:index' %}">{% trans "Index" %}</a>,

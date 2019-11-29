@@ -5,9 +5,9 @@
     {% include "kwis/headerContent.html" %}
   </head>
   <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-6">
+    <div class="uk-container">
+      <div class="uk-child-width-1-2@m" uk-grid>
+        <div>
         {% if round_list %}
           <table class="table table-condensed table-striped">
             <caption>{% trans "Overview of all rounds" %}</caption>
@@ -32,7 +32,7 @@
         {% endif %}
         </div>
     
-        <div class="col-sm-6">
+        <div>
         {% if team_list %}
           <table class="table table-condensed table-striped">
           <caption>{% trans "Overview of all teams" %}</caption>
@@ -57,16 +57,13 @@
         {% endif %}
         </div>
 
-      </div> <!-- /row -->
-      <div class="row">
-        <div class="col-sm-6">
+        <div>
           <a href="rnd_overview.png"><img class="img-responsive img-rounded center-block" src="rnd_overview.png" /></a>
         </div>
-        <div class="col-sm-6">
+        <div>
           <a href="team_overview.png"><img class="img-responsive img-rounded center-block" src="team_overview.png" /></a>
         </div>
-      </div> <!-- /row -->
-
+      </div> <!-- /grid -->
 
     <HR>
     {% trans "Links:" %} <a href="{% url 'kwis:ranking' %}">{% trans "Ranking" %}</a>, <a href="/admin/">{% trans "Admin" %}</a>
