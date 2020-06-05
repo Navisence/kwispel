@@ -1,4 +1,4 @@
-Django==1.11.28
+Django==1.11.29
 cycler==0.10.0
 matplotlib==1.5.3
 numpy==1.11.1
