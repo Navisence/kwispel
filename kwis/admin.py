@@ -1,8 +1,8 @@
 from django.contrib import admin
 
 # Giving admin module access to kwis models
-from .models import QTeam, QRound, QAnswer
+from .models import Team, Round, Answer
 
-admin.site.register(QTeam)
-admin.site.register(QRound)
-admin.site.register(QAnswer)
+admin.site.register(Team)
+admin.site.register(Round)
+admin.site.register(Answer)
