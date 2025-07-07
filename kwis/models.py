@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Deferrable, UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 
 # These models are defined:
@@ -35,3 +36,12 @@ class Answer(models.Model):
     class Meta:
         verbose_name = _('Answer')
         verbose_name_plural = _('Answers')
+        constraints = [
+            # Ensure that each team can only have one answer per round
+            UniqueConstraint(
+                fields=['team', 'rnd'],
+                name='unique_team_round_answer',
+                deferrable=Deferrable.IMMEDIATE,
+                violation_error_message=_("A team can only have one answer per round.")
+            ),
+        ]
