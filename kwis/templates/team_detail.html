@@ -1,0 +1,61 @@
+{% extends "master.html" %}
+{% load i18n %}
+
+{% block title %}
+Details voor {{ team.team_name }}
+{% endblock %}
+
+{% block content %}
+    <div class="uk-container">
+        <h1>{{ team.team_name }}</h1>
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    
+      <div class="uk-child-width-1-2@m" uk-grid>
+      <div>
+        <table class="table table-condensed table-striped">
+		<caption>{% translate "Subtotal:" %} {{ subtotal }} / {{ maxtotal }}</caption>
+          <thead>
+          <tr>
+            <th class="col-sm-4">{% translate "Round" %}</th>
+            <th class="col-sm-4">{% translate "Score" %}</th>
+            <th class="col-sm-4"></th>
+          </tr>
+          </thead>
+          {% for answer in team.answer_set.all %}
+          <tr>
+            <td>
+              <a href="{% url 'rnd_detail' answer.rnd.id %}">{{ answer.rnd.round_name }}</a>
+            </td>
+            <td>
+              <a href="{% url 'vote' answer.rnd.id answer.team.id %}">{{ answer.score }}</a>
+            </td>
+            <td>
+            </td>
+          </tr>
+          {% endfor %}
+          {% for rnd, form in round_list_todo %}
+          <tr>
+            <form action="{% url 'vote' rnd.id team.id %}" method="post">
+            {% csrf_token %}
+            <td>
+              <label><a href="{% url 'rnd_detail' rnd.id %}">{{ rnd.round_name }}</a></label>
+            </td>
+            <td>
+              {{ form.score }}
+            <td>
+            <input type="submit" value="Enter" />
+            </form>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+
+      <div class="span4"><img class="img-responsive img-rounded center-block" src="{{ team.id }}/result.png" /></div>
+      </div>
+
+      <HR>
+      {% translate "Links:" %} <a href="{% url 'index' %}">{% translate "Index" %}</a>,
+      <a href="{% url 'ranking' %}">{% translate "Ranking" %}</a>,
+      <a href="/admin/">{% translate "Admin" %}</a>
+    </div> <!-- /container -->
+{% endblock %}

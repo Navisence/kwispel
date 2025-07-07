@@ -1,27 +1,28 @@
-<!DOCTYPE html>
+{% extends "master.html" %}
 {% load i18n %}
-<html>
-  <head>
-{% include "kwis/headerContent.html" %}
+
+{% block title %}
+Ranking
+{% endblock %}
+
+{% block content %}
     <meta http-equiv="refresh" content="60">
-  </head>
-  <body>
     <div class="uk-container uk-container-large">
     {% if sorted %}
       <div class="uk-text-lead uk-text-center">{{ caption }}</div>
       <div class="uk-child-width-1-2@m uk-grid-small" uk-grid>
         <div class="uk-card uk-card-default uk-card-body uk-text-lead uk-padding-small">
           <div uk-grid>
-              <div class="uk-width-1-5 uk-text-right">{% trans "Place" %}</div>
-              <div class="uk-width-3-5">{% trans "Team" %}</div>
-              <div class="uk-width-1-5">{% trans "Score" %}</div>
+              <div class="uk-width-1-5 uk-text-right">{% translate "Place" %}</div>
+              <div class="uk-width-3-5">{% translate "Team" %}</div>
+              <div class="uk-width-1-5">{% translate "Score" %}</div>
           </div>
         </div>
         <div class="uk-visible@m uk-card uk-card-default uk-card-body uk-text-lead uk-padding-small">
           <div uk-grid>
-              <div class="uk-width-1-5 uk-text-right">{% trans "Place" %}</div>
-              <div class="uk-width-3-5">{% trans "Team" %}</div>
-              <div class="uk-width-1-5">{% trans "Score" %}</div>
+              <div class="uk-width-1-5 uk-text-right">{% translate "Place" %}</div>
+              <div class="uk-width-3-5">{% translate "Team" %}</div>
+              <div class="uk-width-1-5">{% translate "Score" %}</div>
           </div>
         </div>
         {% for result in sorted %}
@@ -35,11 +36,10 @@
         {% endfor %}
       </div>
     {% else %}
-      <p>{% trans "No sorted results found." %}</p>
+      <p>{% translate "No sorted results found." %}</p>
     {% endif %}
 
     <HR>
-    {% trans "Links:" %} <a href="{% url 'kwis:index' %}">{% trans "Index" %}</a>, <a href="/admin/">{% trans "Admin" %}</a>
+    {% translate "Links:" %} <a href="{% url 'index' %}">{% translate "Index" %}</a>, <a href="/admin/">{% translate "Admin" %}</a>
     </div> <!-- /container -->
-  </body>
-</html>
+{% endblock %}

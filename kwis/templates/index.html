@@ -1,24 +1,25 @@
-<!DOCTYPE html>
+{% extends "master.html" %}
 {% load i18n %}
-<html>
-  <head>
-    {% include "kwis/headerContent.html" %}
-  </head>
-  <body>
+
+{% block title %}
+Kwispel
+{% endblock %}
+
+{% block content %}
     <div class="uk-container">
       <div class="uk-child-width-1-2@m" uk-grid>
         <div>
         {% if round_list %}
           <table class="table table-condensed table-striped">
-            <caption>{% trans "Overview of all rounds" %}</caption>
+            <caption>{% translate "Overview of all rounds" %}</caption>
             <thead>
-              <th>{% trans "Round" %}</th>
-              <th>{% trans "Progress" %}</th>
+              <th>{% translate "Round" %}</th>
+              <th>{% translate "Progress" %}</th>
             </thead>
             {% for round, status in round_list %}
             <tr>
               <td>
-                <a href="{% url 'kwis:rnd_detail' round.id %}">{{ round.round_name }}</a>
+                <a href="{% url 'rnd_detail' round.id %}">{{ round.round_name }}</a>
               </td>
               <td>
                {{ status }}
@@ -28,22 +29,22 @@
           </table>
 
         {% else %}
-          <p>{% trans "No rounds are available." %}</p>
+          <p>{% translate "No rounds are available." %}</p>
         {% endif %}
         </div>
     
         <div>
         {% if team_list %}
           <table class="table table-condensed table-striped">
-          <caption>{% trans "Overview of all teams" %}</caption>
+          <caption>{% translate "Overview of all teams" %}</caption>
             <thead>
-              <th>{% trans "Team" %}</th>
-              <th>{% trans "Progress" %}</th>
+              <th>{% translate "Team" %}</th>
+              <th>{% translate "Progress" %}</th>
             </thead>
             {% for team, status, subtot in team_list %}
             <tr>
               <td>
-                <a href="{% url 'kwis:team_detail' team.id %}">{{ team.team_name }}</a>
+                <a href="{% url 'team_detail' team.id %}">{{ team.team_name }}</a>
               </td>
               <td>
                {{ status }}
@@ -53,7 +54,7 @@
           </table>
 
         {% else %}
-          <p>{% trans "No teams are available." %}</p>
+          <p>{% translate "No teams are available." %}</p>
         {% endif %}
         </div>
 
@@ -66,7 +67,6 @@
       </div> <!-- /grid -->
 
     <HR>
-    {% trans "Links:" %} <a href="{% url 'kwis:ranking' %}">{% trans "Ranking" %}</a>, <a href="/admin/">{% trans "Admin" %}</a>
+    {% translate "Links:" %} <a href="{% url 'ranking' %}">{% translate "Ranking" %}</a>, <a href="/admin/">{% translate "Admin" %}</a>
     </div> <!-- /container -->
-  </body>
-</html>
+{% endblock %}

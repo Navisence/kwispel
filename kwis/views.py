@@ -1,13 +1,11 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required
 
-from decimal import *
-
-from .models import QRound, QTeam, QAnswer
+from .models import Round, Team, Answer
 
 # Imports needed to generate graphs
 import matplotlib as mpl
@@ -38,11 +36,11 @@ class ScoreForm(forms.Form):
 def get_completed_rounds():
     """
     Return a list of rounds that are completed by all teams.
-    A completed round has as much elements in its qanswer_set as there are participating teams.
+    A completed round has as much elements in its answer_set as there are participating teams.
     """
     result = []
-    for rnd in QRound.objects.all():
-        if rnd.qanswer_set.count() == QTeam.objects.count():
+    for rnd in Round.objects.all():
+        if rnd.answer_set.count() == Team.objects.count():
             result.append(rnd)
     return result
 
@@ -52,9 +50,9 @@ def get_ranked_results(completed_rounds):
     Then all teams are sorted on total score and are given a ranking to allow for ex aequo scores.
     """
     results = []
-    for team in QTeam.objects.all():
+    for team in Team.objects.all():
         teamtotal = 0
-        for a in team.qanswer_set.all():
+        for a in team.answer_set.all():
             # Only add results for complete rounds
             if a.rnd in completed_rounds:
                 teamtotal += a.score
@@ -76,50 +74,48 @@ def get_ranked_results(completed_rounds):
 
 def dynamic_rotation(nbObjects):
     if nbObjects <= 10:
-        return "-25"
-    elif nbObjects <= 20:
-        return "-35"
+        return "horizontal"
     else:
-        return "-45"
+        return "vertical"
 
 #   Initial views contain overviews only
 def index(request):
     """
-    List all teams and all rounds. This is the main jury view from where to add scores
+    List all teams and all rounds. This is the main jury view from where to add scores.
     """
-    round_list = QRound.objects.all()
-    team_list = QTeam.objects.all()
+    round_list = Round.objects.all()
+    team_list = Team.objects.all()
 
     round_status = []
     for r in round_list:
-        if r.qanswer_set.count() == team_list.count():
+        if r.answer_set.count() == team_list.count():
             # Translators: This indicates all scores for a round have been entered
             round_status.append((r, _("Complete")))
         else:
-            round_status.append((r, "%d / %d" % (r.qanswer_set.count(), team_list.count())))
+            round_status.append((r, "%d / %d" % (r.answer_set.count(), team_list.count())))
 
     team_status = []
     for t in team_list:
         subtotal = 0
         maxtotal = 0
-        for ts in t.qanswer_set.all():
+        for ts in t.answer_set.all():
             subtotal += ts.score
             maxtotal += ts.rnd.max_score
         team_status.append((t, "%.1f / %.1f" % (subtotal, maxtotal), subtotal))
     team_status.sort(key=lambda tup: tup[2], reverse = True)
 
     context = {'round_list': round_status, 'team_list': team_status}
-    return render(request, 'kwis/index.html', context)
+    return render(request, 'index.html', context)
 
 def ranking(request):
     """
-    This is the main view for contestants: ranking of teams based on their results
+    This is the main view for contestants: ranking of teams based on their results.
     """
 
     # First identify completed rounds.
     rnd_complete = get_completed_rounds()
 
-    if len(rnd_complete) == QRound.objects.count():
+    if len(rnd_complete) == Round.objects.count():
         # Translators: This indicates all scores for all rounds have been entered
         caption = _("Final ranking")
     elif len(rnd_complete) == 0:
@@ -133,21 +129,21 @@ def ranking(request):
 
     ranking = get_ranked_results(rnd_complete)
 
-    return render(request, 'kwis/ranking.html', {'sorted': ranking, 'caption': caption})
+    return render(request, 'ranking.html', {'sorted': ranking, 'caption': caption})
 
 @login_required
 def rnd_detail(request, rnd_id):
     """
     Detail views allow to view results per round or per team
     """
-    rnd = get_object_or_404(QRound, pk=rnd_id)
+    rnd = get_object_or_404(Round, pk=rnd_id)
 
     # Filter a list of answers for this round
-    ar = rnd.qanswer_set.all()
+    ar = rnd.answer_set.all()
 
     # Create a list of teams that don't have a score in this round yet
     team_list_todo = []
-    for t in QTeam.objects.order_by('team_name'):
+    for t in Team.objects.order_by('team_name'):
         if ar.filter(team = t).count() == 0:
             team_list_todo.append(t)
     # Teams that already have a score in this round can be accessed from the template using the _set
@@ -155,7 +151,7 @@ def rnd_detail(request, rnd_id):
     # Create form to be used for all other teams
     form = ScoreForm(max_value=rnd.max_score)
 
-    return render(request, 'kwis/rnd_detail.html', {'rnd': rnd, 'team_list_todo': team_list_todo, 'form': form})
+    return render(request, 'rnd_detail.html', {'rnd': rnd, 'team_list_todo': team_list_todo, 'form': form})
 
 @login_required
 def team_detail(request, team_id):
@@ -163,24 +159,24 @@ def team_detail(request, team_id):
     Detail views allow to view results per round or per team
     """
     # Check if team entry exists
-    team = get_object_or_404(QTeam, pk=team_id)
+    team = get_object_or_404(Team, pk=team_id)
 
     # Count all results for this team
     subtotal = 0
     maxtotal = 0
-    alist = team.qanswer_set.order_by('rnd')
+    alist = team.answer_set.order_by('rnd')
     for a in alist:
         subtotal += a.score
         maxtotal += a.rnd.max_score
 
     # Create a list of rounds that have no results yet for this team
     round_list_todo = []
-    for r in QRound.objects.all():
+    for r in Round.objects.all():
         if alist.filter(rnd = r).count() == 0:
             form = ScoreForm(max_value=r.max_score)
             round_list_todo.append((r, form))
 
-    return render(request, 'kwis/team_detail.html', {'team': team, 'subtotal': subtotal, 'maxtotal': maxtotal, 'round_list_todo': round_list_todo})
+    return render(request, 'team_detail.html', {'team': team, 'subtotal': subtotal, 'maxtotal': maxtotal, 'round_list_todo': round_list_todo})
 
 @login_required
 def vote(request, rnd_id, team_id):
@@ -188,15 +184,15 @@ def vote(request, rnd_id, team_id):
     The vote view handles the POST requests
     """
     # check for existing rnd and team
-    arnd  = get_object_or_404(QRound, pk=rnd_id)
-    ateam = get_object_or_404(QTeam, pk=team_id)
+    arnd  = get_object_or_404(Round, pk=rnd_id)
+    ateam = get_object_or_404(Team, pk=team_id)
 
-    # if item exists for QAnswer -> update; else create
-    alist = QAnswer.objects.filter(rnd = arnd, team = ateam)
+    # if item exists for Answer -> update; else create
+    alist = Answer.objects.filter(rnd = arnd, team = ateam)
     if alist.count():
         a = alist.get()
     else:
-        a = QAnswer(rnd = arnd, team = ateam, score="")
+        a = Answer(rnd = arnd, team = ateam, score="")
 
     # Get form
     if request.method == 'POST':
@@ -215,12 +211,12 @@ def vote(request, rnd_id, team_id):
                 a.score = score
                 a.save()
 
-                return HttpResponseRedirect(reverse('kwis:rnd_detail', args=(arnd.id,)))
+                return HttpResponseRedirect(reverse('rnd_detail', args=(arnd.id,)))
 
     else:
         form = ScoreForm(max_value=arnd.max_score, initial={'score': a.score})
 
-    return render(request, 'kwis/form.html', {'rnd': arnd, 'team': ateam, 'form': form})
+    return render(request, 'form.html', {'rnd': arnd, 'team': ateam, 'form': form})
 
 def team_result(request, team_id):
     """
@@ -228,8 +224,8 @@ def team_result(request, team_id):
     """
 
     # Retrieve team info and scores for the team
-    ateam = get_object_or_404(QTeam, pk=team_id)
-    answers = ateam.qanswer_set.order_by('rnd')
+    ateam = get_object_or_404(Team, pk=team_id)
+    answers = ateam.answer_set.order_by('rnd')
 
     # Set number of vertical bars
     ind = np.arange(len(answers))
@@ -270,8 +266,8 @@ def rnd_result(request, rnd_id):
     """
 
     # Retrieve round info and scores for round
-    arnd = get_object_or_404(QRound, pk=rnd_id)
-    answers = arnd.qanswer_set.order_by('-score')
+    arnd = get_object_or_404(Round, pk=rnd_id)
+    answers = arnd.answer_set.order_by('-score')
 
     # Set number of vertical bars
     ind = np.arange(len(answers))
@@ -311,15 +307,15 @@ def team_overview(request):
     """
 
     # Cumulative scores per team
-    ind = np.arange(QTeam.objects.count())
+    ind = np.arange(Team.objects.count())
 
     subtotals = []
     maxtotals = []
     names     = []
-    for t in QTeam.objects.all():
+    for t in Team.objects.all():
         subtotal = 0
         maxtotal = 0
-        for ts in t.qanswer_set.all():
+        for ts in t.answer_set.all():
             subtotal += ts.score
             maxtotal += ts.rnd.max_score
         subtotals.append(subtotal)
@@ -342,7 +338,7 @@ def team_overview(request):
 
     # Set labels and title
     ax.set_xticks(ind + width/2)
-    ax.set_xticklabels(names, rotation=dynamic_rotation(QTeam.objects.count()), ha='left')
+    ax.set_xticklabels(names, rotation=dynamic_rotation(Team.objects.count()), ha='left')
     ax.set_xlabel(_("Teams"))
     ax.set_ylabel(_("Cumulative score"))
 
@@ -366,10 +362,10 @@ def rnd_overview(request):
     """
 
     # Number of teams determines max level of round completion
-    nbTeams = QTeam.objects.count()
+    nbTeams = Team.objects.count()
 
     # Number of bars
-    ind = np.arange(QRound.objects.count())
+    ind = np.arange(Round.objects.count())
 
     # Progress per round
     names      = [] # Round names
@@ -378,13 +374,13 @@ def rnd_overview(request):
     difference = [] # difference between maxima and scores obtained
     remaining  = [] # max scores for teams not yet entered
     data       = [] # raw score data in % for boxplot
-    for r in QRound.objects.all():
+    for r in Round.objects.all():
         names.append(r.round_name)
-        rc = r.qanswer_set.count()
+        rc = r.answer_set.count()
 
         rs = 0
         datalist = []
-        for a in r.qanswer_set.all():
+        for a in r.answer_set.all():
             rs += a.score
             datalist.append(float(a.score)/float(r.max_score))
         scores.append(rs)
@@ -410,7 +406,7 @@ def rnd_overview(request):
 
     # Set labels and title
     ax1.set_xticks(ind)
-    ax1.set_xticklabels(names, rotation=dynamic_rotation(QRound.objects.count()), ha='left')
+    ax1.set_xticklabels(names, rotation=dynamic_rotation(Round.objects.count()), ha='left')
     ax1.set_xlabel(_("Rounds"))
     ax1.set_ylabel(_("Cumulative scores and progress"))
     ax2.set_ylabel(_("Statistics"))
@@ -455,9 +451,9 @@ def ranking_overview(request):
     # Team leading after most recent round: compose line with rankings over all other rounds
     # next team idem until all N lines composed
     N = 5 # Number of top teams to track
-    if QTeam.objects.count() < N:
+    if Team.objects.count() < N:
         # Limit N to the amount of teams
-        N = QTeam.objects.count()
+        N = Team.objects.count()
     top_positions = []
     team_names    = []
     if ranking_matrix:
@@ -498,4 +494,3 @@ def ranking_overview(request):
 
     canvas.print_png(response)
     return response
-

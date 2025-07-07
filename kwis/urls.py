@@ -1,16 +1,15 @@
-from django.conf.urls import url
-
+from django.urls import path
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^team_overview.png$', views.team_overview),
-    url(r'^rnd_overview.png$', views.rnd_overview),
-    url(r'^ranking/$', views.ranking, name='ranking'),
-    url(r'^ranking/overview.png$', views.ranking_overview),
-    url(r'^round/(?P<rnd_id>[0-9]+)/$', views.rnd_detail, name='rnd_detail'),
-    url(r'^round/(?P<rnd_id>[0-9]+)/result.png$', views.rnd_result),
-    url(r'^team/(?P<team_id>[0-9]+)/$', views.team_detail, name='team_detail'),
-    url(r'^team/(?P<team_id>[0-9]+)/result.png$', views.team_result),
-    url(r'^vote/(?P<rnd_id>[0-9]+)/(?P<team_id>[0-9]+)/$', views.vote, name='vote'),
+    path('', views.index, name='index'),
+    path('team_overview.png', views.team_overview),
+    path('rnd_overview.png', views.rnd_overview),
+    path('ranking/', views.ranking, name='ranking'),
+    path('ranking/overview.png', views.ranking_overview),
+    path('round/<int:rnd_id>', views.rnd_detail, name='rnd_detail'),
+    path('round/<int:rnd_id>/result.png', views.rnd_result),
+    path('team/<int:team_id>', views.team_detail, name='team_detail'),
+    path('team/<int:team_id>/result.png', views.team_result),
+    path('vote/<int:rnd_id>/<int:team_id>', views.vote, name='vote'),
 ]

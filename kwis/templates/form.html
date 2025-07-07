@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+{% extends "master.html" %}
 {% load i18n %}
-<html>
-  <head>
-    {% include "kwis/headerContent.html" %}
-  </head>
-  <body>
+
+{% block title %}
+Form
+{% endblock %}
+
+{% block content %}
     <div class="uk-container">
         <h1>{{ rnd.round_name }}</h1>
         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -12,19 +13,19 @@
       <div class="uk-child-width-1-2@m" uk-grid>
       <div>
         <table class="table table-condensed table-striped">
-          <caption>{% trans "Max score this round:" %} {{ rnd.max_score }}</caption>
+          <caption>{% translate "Max score this round:" %} {{ rnd.max_score }}</caption>
           <thead>
           <tr>
-            <th class="col-sm-4">{% trans "Team" %}</th>
-            <th class="col-sm-4">{% trans "Score" %}</th>
+            <th class="col-sm-4">{% translate "Team" %}</th>
+            <th class="col-sm-4">{% translate "Score" %}</th>
             <th class="col-sm-4"></th>
           </tr>
           </thead>
           <tr>
-            <form action="{% url 'kwis:vote' rnd.id team.id %}" method="post">
+            <form action="{% url 'vote' rnd.id team.id %}" method="post">
             {% csrf_token %}
             <td>
-                <label><a href="{% url 'kwis:team_detail' team.id %}">{{ team.team_name }}</a></label>
+                <label><a href="{% url 'team_detail' team.id %}">{{ team.team_name }}</a></label>
             </td>
             <td>
               {{ form.score.errors }}
@@ -40,9 +41,8 @@
       </div>
     
       <HR>
-      {% trans "Links:" %} <a href="{% url 'kwis:index' %}">{% trans "Index" %}</a>,
-      <a href="{% url 'kwis:ranking' %}">{% trans "Ranking" %}</a>,
-      <a href="/admin/">{% trans "Admin" %}</a>
+      {% translate "Links:" %} <a href="{% url 'index' %}">{% translate "Index" %}</a>,
+      <a href="{% url 'ranking' %}">{% translate "Ranking" %}</a>,
+      <a href="/admin/">{% translate "Admin" %}</a>
     </div> <!-- /container -->
-  </body>
-</html>
+{% endblock %}
