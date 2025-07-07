@@ -14,7 +14,7 @@ Usable if you're not afraid of some manual configuration (see below).
 ## Requirements
  * python3
  * django
- * django-bootstrap3
+ * django-bootstrap5
  * numpy
  * matplotlib
 
