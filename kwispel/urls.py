@@ -21,7 +21,7 @@ from kwis import views as kwis_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^accounts/login/$', auth_views.login, {'template_name': 'admin/login.html'}),
+    url(r'^accounts/login/$', auth_views.LoginView.as_view(template_name='admin/login.html')),
     url(r'^kwis/', include('kwis.urls', namespace="kwis")),
     url(r'^$', kwis_views.ranking, name='ranking'),
 ]

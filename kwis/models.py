@@ -27,8 +27,8 @@ class QRound(models.Model):
 
 class QAnswer(models.Model):
     # Each answer is bound to a team, a round and contains the score for a specific team and round
-    team = models.ForeignKey(QTeam)
-    rnd = models.ForeignKey(QRound)
+    team = models.ForeignKey(QTeam,on_delete=models.PROTECT)
+    rnd = models.ForeignKey(QRound,on_delete=models.PROTECT)
     score = models.DecimalField(max_digits=6, decimal_places=1)
     def __str__(self):
         return str(self.team) + ", " + self.rnd.round_name + ": " + str(self.score)

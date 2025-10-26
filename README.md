@@ -13,10 +13,19 @@ Early development
 
 ## Requirements
  * python3
- * django
- * django-bootstrap3
- * numpy
- * matplotlib
+ * python3-pip
+ * virtualenv
+ * gettext
+
+## Installation
+ * Clone this repository and cd into it
+ * `virtualenv -p python3 venv`
+ * `. ./venv/bin/activate`
+ * `pip install -r requirements.txt` will install in the venv
+   * django
+   * django-bootstrap3
+   * numpy
+   * matplotlib
 
 ## Startup
 After installation, run the following commands:

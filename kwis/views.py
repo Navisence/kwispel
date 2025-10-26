@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django import forms
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
@@ -16,6 +16,8 @@ mpl.use('Agg') # make sure no X backend is used
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
+import io
 
 
 # Dictionary to define color usage in graphs
@@ -300,9 +302,10 @@ def rnd_result(request, rnd_id):
     ax.grid(True)
 
     canvas = FigureCanvas(fig)
-    response = HttpResponse(content_type='image/png')
-
-    canvas.print_png(response)
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close(fig)
+    response = HttpResponse(buf.getvalue(), content_type='image/png')
     return response
 
 def team_overview(request):
@@ -334,30 +337,65 @@ def team_overview(request):
     fig, ax = plt.subplots(1,1)
     fig.set_tight_layout(True)
 
+    # Test code
+    N = 5
+    menMeans = (20.0, 35.1, 30.2, 35.3, 27.2)
+    womenMeans = (25, 32, 34, 20, 25)
+    ind_t = np.arange(N)    # the x locations for the groups
+    width_t = 0.35       # the width of the bars: can also be len(x) sequence
+    print(type(menMeans))
+    print(type(menMeans[0]))
+    print(type(womenMeans))
+    print(type(womenMeans[0]))
+    print(type(width_t))
+    print(menMeans)
+
+    p1 = plt.bar(ind_t, menMeans, width_t)
+    p2 = plt.bar(ind_t, womenMeans, width_t, bottom=menMeans)
+
     # Draw bars
-    width = 0.5
-    ax.bar(ind, subtotals, width, color=colors['score_good'])
-    ax.bar(ind, maxtotals, width, color=colors['score_bad'], bottom=subtotals)
+    width = 0.35
+    print(type(subtotals))
+    print(type(subtotals[0]))
+    print(type(maxtotals))
+    print(type(maxtotals[0]))
+    print(type(width))
+    print(type(colors))
+    print(subtotals)
 
-    # Set labels and title
-    ax.set_xticks(ind + width/2)
-    ax.set_xticklabels(names, rotation=dynamic_rotation(QTeam.objects.count()), ha='left')
-    ax.set_xlabel(_("Teams"))
-    ax.set_ylabel(_("Cumulative score"))
+    b1 = ax.bar(ind, subtotals, width)
+    #b2 = plt.bar(ind, maxtotals, width, bottom=subtotals)
 
-    title = _(u"Progress per team")
-    ax.set_title(title)
+    ## Set labels and title
+    #ax.set_xticks(ind + width/2)
+    #ax.set_xticklabels(names, rotation=dynamic_rotation(QTeam.objects.count()), ha='left')
+    #ax.set_xlabel(_("Teams"))
+    #ax.set_ylabel(_("Cumulative score"))
 
-    ax.grid(True)
+    #title = _(u"Progress per team")
+    #ax.set_title(title)
 
-    for tl in ax.get_yticklabels():
-        tl.set_color(colors['score_good'])
+    #ax.grid(True)
+
+    #for tl in ax.get_yticklabels():
+    #    tl.set_color(colors['score_good'])
+
+
+    plt.ylabel('Scores')
+    plt.title('Scores by group and gender')
+    plt.xticks(ind, ('G1', 'G2', 'G3', 'G4', 'G5'))
+    plt.yticks(np.arange(0, 81, 10))
+    plt.legend((p1[0], p2[0]), ('Men', 'Women'))
+
+    #plt.show()
 
     canvas = FigureCanvas(fig)
-    response = HttpResponse(content_type='image/png')
-
-    canvas.print_png(response)
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close(fig)
+    response = HttpResponse(buf.getvalue(), content_type='image/png')
     return response
+
 
 def rnd_overview(request):
     """
@@ -402,8 +440,8 @@ def rnd_overview(request):
     barlocation = ind-width
     boxlocation = ind+width
     ax1.bar(barlocation, scores, width, color=colors['score_good'])
-    ax1.bar(barlocation, difference, width, color=colors['score_bad'], bottom=scores)
-    ax1.bar(barlocation, remaining, width, color=colors['empty'], bottom=maxima)
+    #ax1.bar(barlocation, difference, width, color=colors['score_bad'], bottom=scores)
+    #ax1.bar(barlocation, remaining, width, color=colors['empty'], bottom=maxima)
     ax2.boxplot(data, widths=width, positions=boxlocation, showmeans=True)
 
     # Set labels and title
@@ -426,9 +464,10 @@ def rnd_overview(request):
         tl.set_color(colors['score_bad'])
 
     canvas = FigureCanvas(fig)
-    response = HttpResponse(content_type='image/png')
-
-    canvas.print_png(response)
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close(fig)
+    response = HttpResponse(buf.getvalue(), content_type='image/png')
     return response
 
 def ranking_overview(request):
@@ -492,8 +531,9 @@ def ranking_overview(request):
     ax1.grid(True)
 
     canvas = FigureCanvas(fig)
-    response = HttpResponse(content_type='image/png')
-
-    canvas.print_png(response)
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close(fig)
+    response = HttpResponse(buf.getvalue(), content_type='image/png')
     return response
 
