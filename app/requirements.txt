@@ -1,0 +1,4 @@
+Django==5.2.7
+matplotlib==3.10.7
+gunicorn==23.0.0
+whitenoise==6.11.0

@@ -23,7 +23,8 @@ parts/
 productionfiles/
 sdist/
 var/
-.venv
+venv/
+.venv/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -67,3 +68,6 @@ target/
 
 # Do not include the DB file
 *.sqlite3
+
+# Application config
+.env*
