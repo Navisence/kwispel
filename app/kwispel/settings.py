@@ -56,6 +56,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:1337'
+]
+
 ROOT_URLCONF = 'kwispel.urls'
 
 TEMPLATES = [
