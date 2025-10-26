@@ -7,23 +7,25 @@ from django.contrib.auth.decorators import login_required
 
 from .models import Round, Team, Answer
 
-# Imports needed to generate graphs
-import matplotlib as mpl
-mpl.use('Agg') # make sure no X backend is used
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
+# Imports needed to generate graphs
+import matplotlib as mpl
+mpl.use('Agg')  # make sure no X backend is used
 
 # Dictionary to define color usage in graphs
-colors  = {'score_good': 'green',
-        'score_bad': 'red',
-        'empty':'lightblue'}
+colors = {'score_good': 'green',
+          'score_bad': 'red',
+          'empty': 'lightblue',
+          }
+
 
 # Helper classes for forms
 class PostedForm(forms.Form):
     score = forms.DecimalField(max_digits=6, decimal_places=1)
+
 
 class ScoreForm(forms.Form):
     def __init__(self, max_value=None, *args, **kwargs):
@@ -31,6 +33,7 @@ class ScoreForm(forms.Form):
         self.fields['score'] = forms.DecimalField(max_digits=6, decimal_places=1, min_value=0, max_value=max_value)
 
     score = forms.DecimalField(max_digits=6, decimal_places=1, min_value=0)
+
 
 # Useful common functions
 def get_completed_rounds():
@@ -43,6 +46,7 @@ def get_completed_rounds():
         if rnd.answer_set.count() == Team.objects.count():
             result.append(rnd)
     return result
+
 
 def get_ranked_results(completed_rounds):
     """
@@ -72,11 +76,13 @@ def get_ranked_results(completed_rounds):
 
     return ranking
 
+
 def dynamic_rotation(nbObjects):
     if nbObjects <= 10:
         return "horizontal"
     else:
         return "vertical"
+
 
 #   Initial views contain overviews only
 def index(request):
@@ -102,10 +108,11 @@ def index(request):
             subtotal += ts.score
             maxtotal += ts.rnd.max_score
         team_status.append((t, "%.1f / %.1f" % (subtotal, maxtotal), subtotal))
-    team_status.sort(key=lambda tup: tup[2], reverse = True)
+    team_status.sort(key=lambda tup: tup[2], reverse=True)
 
     context = {'round_list': round_status, 'team_list': team_status}
     return render(request, 'index.html', context)
+
 
 def ranking(request):
     """
@@ -125,11 +132,12 @@ def ranking(request):
         caption = _("Ranking after ")
         for rnd in rnd_complete:
             caption += rnd.round_name + ", "
-        caption = caption[:-2] # Remove final ", "
+        caption = caption[:-2]  # Remove final ", "
 
     ranking = get_ranked_results(rnd_complete)
 
     return render(request, 'ranking.html', {'sorted': ranking, 'caption': caption})
+
 
 @login_required
 def rnd_detail(request, rnd_id):
@@ -144,7 +152,7 @@ def rnd_detail(request, rnd_id):
     # Create a list of teams that don't have a score in this round yet
     team_list_todo = []
     for t in Team.objects.order_by('team_name'):
-        if ar.filter(team = t).count() == 0:
+        if ar.filter(team=t).count() == 0:
             team_list_todo.append(t)
     # Teams that already have a score in this round can be accessed from the template using the _set
 
@@ -152,6 +160,7 @@ def rnd_detail(request, rnd_id):
     form = ScoreForm(max_value=rnd.max_score)
 
     return render(request, 'rnd_detail.html', {'rnd': rnd, 'team_list_todo': team_list_todo, 'form': form})
+
 
 @login_required
 def team_detail(request, team_id):
@@ -172,11 +181,12 @@ def team_detail(request, team_id):
     # Create a list of rounds that have no results yet for this team
     round_list_todo = []
     for r in Round.objects.all():
-        if alist.filter(rnd = r).count() == 0:
+        if alist.filter(rnd=r).count() == 0:
             form = ScoreForm(max_value=r.max_score)
             round_list_todo.append((r, form))
 
     return render(request, 'team_detail.html', {'team': team, 'subtotal': subtotal, 'maxtotal': maxtotal, 'round_list_todo': round_list_todo})
+
 
 @login_required
 def vote(request, rnd_id, team_id):
@@ -184,21 +194,21 @@ def vote(request, rnd_id, team_id):
     The vote view handles the POST requests
     """
     # check for existing rnd and team
-    arnd  = get_object_or_404(Round, pk=rnd_id)
+    arnd = get_object_or_404(Round, pk=rnd_id)
     ateam = get_object_or_404(Team, pk=team_id)
 
     # if item exists for Answer -> update; else create
-    alist = Answer.objects.filter(rnd = arnd, team = ateam)
+    alist = Answer.objects.filter(rnd=arnd, team=ateam)
     if alist.count():
         a = alist.get()
     else:
-        a = Answer(rnd = arnd, team = ateam, score="")
+        a = Answer(rnd=arnd, team=ateam, score="")
 
     # Get form
     if request.method == 'POST':
         form = PostedForm(request.POST)
         if form.is_valid():
-            score= form.cleaned_data['score']
+            score = form.cleaned_data['score']
 
             # Primitive way to check correct value
             badvalue = 0
@@ -218,6 +228,7 @@ def vote(request, rnd_id, team_id):
 
     return render(request, 'form.html', {'rnd': arnd, 'team': ateam, 'form': form})
 
+
 def team_result(request, team_id):
     """
     Plot results per team
@@ -233,10 +244,10 @@ def team_result(request, team_id):
     # Retrieve score, max score and name per round
     scores = [answer.score for answer in answers]
     maxima = [(answer.rnd.max_score - answer.score) for answer in answers]
-    names  = [answer.rnd.round_name for answer in answers]
+    names = [answer.rnd.round_name for answer in answers]
 
     # The image
-    fig, ax = plt.subplots(1,1)
+    fig, ax = plt.subplots(1, 1)
     fig.set_tight_layout(True)
 
     # Draw vertical bars
@@ -245,7 +256,7 @@ def team_result(request, team_id):
     ax.bar(ind, maxima, width, color=colors['score_bad'], bottom=scores)
 
     # Set labels and title
-    ax.set_xticks(ind + width/2)
+    ax.set_xticks(ind + width / 2)
     ax.set_xticklabels(names)
     ax.set_xlabel(_("Rounds"))
     ax.set_ylabel(_("Scores"))
@@ -259,6 +270,7 @@ def team_result(request, team_id):
 
     canvas.print_png(response)
     return response
+
 
 def rnd_result(request, rnd_id):
     """
@@ -274,10 +286,10 @@ def rnd_result(request, rnd_id):
 
     # Retrieve score and team name per round
     scores = [answer.score for answer in answers]
-    names  = [answer.team.team_name for answer in answers]
+    names = [answer.team.team_name for answer in answers]
 
     # The image
-    fig, ax = plt.subplots(1,1)
+    fig, ax = plt.subplots(1, 1)
     fig.set_tight_layout(True)
 
     # Draw vertical bar
@@ -285,7 +297,7 @@ def rnd_result(request, rnd_id):
     ax.barh(ind, scores, width, color=colors['score_good'])
 
     # Set labels and title
-    ax.set_yticks(ind + width/2)
+    ax.set_yticks(ind + width / 2)
     ax.set_yticklabels(names)
     ax.set_ylabel(_("Teams"))
     ax.set_xlabel(_("Scores"))
@@ -301,6 +313,7 @@ def rnd_result(request, rnd_id):
     canvas.print_png(response)
     return response
 
+
 def team_overview(request):
     """
     Plot overview of all teams
@@ -311,7 +324,7 @@ def team_overview(request):
 
     subtotals = []
     maxtotals = []
-    names     = []
+    names = []
     for t in Team.objects.all():
         subtotal = 0
         maxtotal = 0
@@ -328,7 +341,7 @@ def team_overview(request):
         subtotals, maxtotals, names = zip(*zipped)
 
     # The image
-    fig, ax = plt.subplots(1,1)
+    fig, ax = plt.subplots(1, 1)
     fig.set_tight_layout(True)
 
     # Draw bars
@@ -337,7 +350,7 @@ def team_overview(request):
     ax.bar(ind, maxtotals, width, color=colors['score_bad'], bottom=subtotals)
 
     # Set labels and title
-    ax.set_xticks(ind + width/2)
+    ax.set_xticks(ind + width / 2)
     ax.set_xticklabels(names, rotation=dynamic_rotation(Team.objects.count()), ha='left')
     ax.set_xlabel(_("Teams"))
     ax.set_ylabel(_("Cumulative score"))
@@ -356,6 +369,7 @@ def team_overview(request):
     canvas.print_png(response)
     return response
 
+
 def rnd_overview(request):
     """
     Plot overview of all rounds
@@ -368,12 +382,12 @@ def rnd_overview(request):
     ind = np.arange(Round.objects.count())
 
     # Progress per round
-    names      = [] # Round names
-    scores     = [] # Effectively obtained by all teams per round
-    maxima     = [] # maxima for the already entered teams
-    difference = [] # difference between maxima and scores obtained
-    remaining  = [] # max scores for teams not yet entered
-    data       = [] # raw score data in % for boxplot
+    names = []  # Round names
+    scores = []  # Effectively obtained by all teams per round
+    maxima = []  # maxima for the already entered teams
+    difference = []  # difference between maxima and scores obtained
+    remaining = []  # max scores for teams not yet entered
+    data = []  # raw score data in % for boxplot
     for r in Round.objects.all():
         names.append(r.round_name)
         rc = r.answer_set.count()
@@ -382,7 +396,7 @@ def rnd_overview(request):
         datalist = []
         for a in r.answer_set.all():
             rs += a.score
-            datalist.append(float(a.score)/float(r.max_score))
+            datalist.append(float(a.score) / float(r.max_score))
         scores.append(rs)
         maxima.append(r.max_score * rc)
         difference.append(r.max_score * rc - rs)
@@ -390,14 +404,14 @@ def rnd_overview(request):
         data.append(datalist)
 
     # The image
-    fig, ax1 = plt.subplots(1,1)
+    fig, ax1 = plt.subplots(1, 1)
     fig.set_tight_layout(True)
     ax2 = ax1.twinx()
 
     # Draw bars
     width = 0.25
-    barlocation = ind-width
-    boxlocation = ind+width
+    barlocation = ind - width
+    boxlocation = ind + width
     ax1.bar(barlocation, scores, width, color=colors['score_good'])
     ax1.bar(barlocation, difference, width, color=colors['score_bad'], bottom=scores)
     ax1.bar(barlocation, remaining, width, color=colors['empty'], bottom=maxima)
@@ -410,7 +424,7 @@ def rnd_overview(request):
     ax1.set_xlabel(_("Rounds"))
     ax1.set_ylabel(_("Cumulative scores and progress"))
     ax2.set_ylabel(_("Statistics"))
-    ax2.set_ylim([0,1])
+    ax2.set_ylim([0, 1])
 
     title = _(u"Progress per round")
     ax1.set_title(title)
@@ -429,6 +443,7 @@ def rnd_overview(request):
     canvas.print_png(response)
     return response
 
+
 def ranking_overview(request):
     """
     Show history of rankings for top N teams in current ranking
@@ -440,7 +455,7 @@ def ranking_overview(request):
     # Calculate ranking after each of these rounds
     increment_rnds = []
     ranking_matrix = []
-    round_names    = []
+    round_names = []
 
     for comprnd in rnd_complete:
         increment_rnds.append(comprnd)
@@ -450,12 +465,12 @@ def ranking_overview(request):
 
     # Team leading after most recent round: compose line with rankings over all other rounds
     # next team idem until all N lines composed
-    N = 5 # Number of top teams to track
+    N = 5  # Number of top teams to track
     if Team.objects.count() < N:
         # Limit N to the amount of teams
         N = Team.objects.count()
     top_positions = []
-    team_names    = []
+    team_names = []
     if ranking_matrix:
         for i in range(N):
             position_list = []
@@ -473,7 +488,7 @@ def ranking_overview(request):
     position_sequence = [list(i) for i in zip(*top_positions)]
 
     # The image
-    fig, ax1 = plt.subplots(1,1,figsize=(7,7))
+    fig, ax1 = plt.subplots(1, 1, figsize=(7, 7))
     fig.set_tight_layout(True)
 
     # Invert y axis so that leading team is on top
