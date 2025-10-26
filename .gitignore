@@ -66,8 +66,9 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
-# Do not include the DB file
+# Do not include the DB file or static files
 *.sqlite3
+staticfiles/
 
 # Application config
 .env*
