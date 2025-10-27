@@ -37,6 +37,8 @@ SECRET_KEY= # to fill in
 DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] # good default
 ```
 * The docker setup still lacks copying the static files from this repository.
+* The SQLITE database should be created and configured.
+* An initial user should be made.
 
 ## Background
 
