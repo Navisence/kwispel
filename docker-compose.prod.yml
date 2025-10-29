@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile.prod
     command: gunicorn kwispel.wsgi:application --bind 0.0.0.0:8000
     volumes:
+      - ./data:/home/app/web/data
       - static_volume:/home/app/web/staticfiles
     expose:
       - 8000
