@@ -14,7 +14,8 @@ ENV PYTHONUNBUFFERED 1
 
 # install system dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc
+    apt-get install -y --no-install-recommends gettext
+    # apt-get install -y --no-install-recommends gcc
 
 # lint
 RUN pip install --upgrade pip
@@ -26,9 +27,9 @@ RUN flake8 --ignore=E501,F401 .
 COPY ./requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
 
-########
-# FINAL#
-########
+#########
+# FINAL #
+#########
 
 # pull official base image
 FROM python:3.14.0-slim-trixie
