@@ -15,6 +15,7 @@ class Team(models.Model):
         return self.team_name
 
     class Meta:
+        # The name for team in single and plural form
         verbose_name = _('Team')
         verbose_name_plural = _('Teams')
 
