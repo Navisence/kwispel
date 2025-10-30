@@ -10,6 +10,7 @@ from .models import Round, Team, Answer
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from decimal import Decimal
 
 # Imports needed to generate graphs
 import matplotlib as mpl
@@ -78,10 +79,11 @@ def get_ranked_results(completed_rounds):
 
 
 def dynamic_rotation(nbObjects):
-    if nbObjects <= 10:
+    if nbObjects <= 5:
         return "horizontal"
     else:
-        return "vertical"
+        # return "vertical"
+        return 30
 
 
 #   Initial views contain overviews only
@@ -331,7 +333,7 @@ def team_overview(request):
         for ts in t.answer_set.all():
             subtotal += ts.score
             maxtotal += ts.rnd.max_score
-        subtotals.append(subtotal)
+        subtotals.append(Decimal(subtotal))
         maxtotals.append(maxtotal - subtotal)
         names.append(t.team_name)
 
@@ -342,7 +344,7 @@ def team_overview(request):
 
     # The image
     fig, ax = plt.subplots(1, 1)
-    fig.set_tight_layout(True)
+    fig.set_tight_layout(True)  # Ensure labels fit in image
 
     # Draw bars
     width = 0.5
@@ -350,8 +352,8 @@ def team_overview(request):
     ax.bar(ind, maxtotals, width, color=colors['score_bad'], bottom=subtotals)
 
     # Set labels and title
-    ax.set_xticks(ind + width / 2)
-    ax.set_xticklabels(names, rotation=dynamic_rotation(Team.objects.count()), ha='left')
+    ax.set_xticks(ind)
+    ax.set_xticklabels(names, rotation=dynamic_rotation(Team.objects.count()), ha='right')
     ax.set_xlabel(_("Teams"))
     ax.set_ylabel(_("Cumulative score"))
 
@@ -405,22 +407,22 @@ def rnd_overview(request):
 
     # The image
     fig, ax1 = plt.subplots(1, 1)
-    fig.set_tight_layout(True)
+    fig.set_tight_layout(True)  # Ensure labels fit in image
     ax2 = ax1.twinx()
 
     # Draw bars
-    width = 0.25
-    barlocation = ind - width
-    boxlocation = ind + width
-    ax1.bar(barlocation, scores, width, color=colors['score_good'])
-    ax1.bar(barlocation, difference, width, color=colors['score_bad'], bottom=scores)
-    ax1.bar(barlocation, remaining, width, color=colors['empty'], bottom=maxima)
+    barwidth = 0.5
+    boxwidth = barwidth / 2
+    barlocation = ind
+    ax1.bar(barlocation, scores, barwidth, color=colors['score_good'])
+    ax1.bar(barlocation, difference, barwidth, color=colors['score_bad'], bottom=scores)
+    ax1.bar(barlocation, remaining, barwidth, color=colors['empty'], bottom=maxima)
     if data:
-        ax2.boxplot(data, widths=width, positions=boxlocation, showmeans=True)
+        ax2.boxplot(data, widths=boxwidth, positions=barlocation, showmeans=True)
 
     # Set labels and title
     ax1.set_xticks(ind)
-    ax1.set_xticklabels(names, rotation=dynamic_rotation(Round.objects.count()), ha='left')
+    ax1.set_xticklabels(names, rotation=dynamic_rotation(Round.objects.count()), ha='center')
     ax1.set_xlabel(_("Rounds"))
     ax1.set_ylabel(_("Cumulative scores and progress"))
     ax2.set_ylabel(_("Statistics"))
