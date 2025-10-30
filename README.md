@@ -41,8 +41,6 @@ DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] # good default
 DJANGO_CSRF_TRUSTED_ORIGINS=http://127.0.0.1:1337 # should contain actual URL used to access the application
 ```
 
-* The docker setup still lacks copying the static files from this repository.
-* The SQLITE database should be created and configured - or kept intact.
 * An initial admin user should be made.
 
 ## Background
