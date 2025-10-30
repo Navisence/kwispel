@@ -13,9 +13,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gettext
-    # apt-get install -y --no-install-recommends gcc
+RUN apt-get update
 
 # lint
 RUN pip install --upgrade pip
@@ -48,7 +46,8 @@ RUN mkdir $APP_HOME/staticfiles
 WORKDIR $APP_HOME
 
 # install dependencies
-RUN apt-get update
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gettext
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --upgrade pip
