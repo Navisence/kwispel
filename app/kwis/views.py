@@ -32,6 +32,7 @@ class ScoreForm(forms.Form):
     def __init__(self, max_value=None, *args, **kwargs):
         super(ScoreForm, self).__init__(*args, **kwargs)
         self.fields['score'] = forms.DecimalField(max_digits=6, decimal_places=1, min_value=0, max_value=max_value)
+        self.fields['score'].widget.attrs.update({"class": "uk-input"})
 
     score = forms.DecimalField(max_digits=6, decimal_places=1, min_value=0)
 
@@ -100,7 +101,7 @@ def index(request):
             # Translators: This indicates all scores for a round have been entered
             round_status.append((r, _("Complete")))
         else:
-            round_status.append((r, _("%d / %d teams") % (r.answer_set.count(), team_list.count())))
+            round_status.append((r, _("%(nrteams)d / %(totalteams)d teams") % {"nrteams": r.answer_set.count(), "totalteams": team_list.count()}))
 
     team_status = []
     for t in team_list:
@@ -231,6 +232,24 @@ def vote(request, rnd_id, team_id):
     return render(request, 'form.html', {'rnd': arnd, 'team': ateam, 'form': form})
 
 
+@login_required
+def delete(request, rnd_id, team_id):
+    """
+    This function handles the deletion of an answer record
+    """
+    # check for existing rnd and team
+    arnd = get_object_or_404(Round, pk=rnd_id)
+    ateam = get_object_or_404(Team, pk=team_id)
+
+    # if item exists for Answer -> delete
+    alist = Answer.objects.filter(rnd=arnd, team=ateam)
+    if alist.count():
+        a = alist.get()
+        a.delete()
+
+    return HttpResponseRedirect(reverse('rnd_detail', args=(arnd.id,)))
+
+
 def team_result(request, team_id):
     """
     Plot results per team
@@ -257,14 +276,11 @@ def team_result(request, team_id):
     ax.bar(ind, scores, width, color=colors['score_good'])
     ax.bar(ind, maxima, width, color=colors['score_bad'], bottom=scores)
 
-    # Set labels and title
+    # Set labels
     ax.set_xticks(ind)
     ax.set_xticklabels(names)
     ax.set_xlabel(_("Rounds"))
     ax.set_ylabel(_("Scores"))
-
-    title = _(u"Scores for %s") % ateam.team_name
-    ax.set_title(title)
 
     ax.grid(True)
     canvas = FigureCanvas(fig)
@@ -298,14 +314,11 @@ def rnd_result(request, rnd_id):
     width = 0.25
     ax.barh(ind, scores, width, color=colors['score_good'])
 
-    # Set labels and title
+    # Set labels
     ax.set_yticks(ind)
     ax.set_yticklabels(names)
     ax.set_ylabel(_("Teams"))
     ax.set_xlabel(_("Scores"))
-
-    title = _(u"Scores for %s") % arnd.round_name
-    ax.set_title(title)
 
     ax.grid(True)
 
@@ -351,7 +364,7 @@ def team_overview(request):
     ax.bar(ind, subtotals, width, color=colors['score_good'])
     ax.bar(ind, maxtotals, width, color=colors['score_bad'], bottom=subtotals)
 
-    # Set labels and title
+    # Set labels
     ax.set_xticks(ind)
     ax.set_xticklabels(names, rotation=dynamic_rotation(Team.objects.count()), ha='right')
     ax.set_xlabel(_("Teams"))
@@ -417,7 +430,7 @@ def rnd_overview(request):
     if data:
         ax2.boxplot(data, widths=boxwidth, positions=barlocation, showmeans=True)
 
-    # Set labels and title
+    # Set labels
     ax1.set_xticks(ind)
     ax1.set_xticklabels(names, rotation=dynamic_rotation(Round.objects.count()), ha='center')
     ax1.set_xlabel(_("Rounds"))

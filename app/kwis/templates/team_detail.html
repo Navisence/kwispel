@@ -12,8 +12,11 @@
 
 <div class="uk-child-width-1-2@m uk-grid-small uk-grid-match" uk-grid>
   <div class="uk-card uk-card-default uk-card-hover uk-card-body">
-    <table class="uk-table uk-table-hover">
-      <caption>{% translate "Subtotal:" %} {{ subtotal }} / {{ maxtotal }}</caption>
+    <table class="uk-table uk-table-hover uk-table-middle">
+      <caption>
+        <h3 class="uk-heading-bullet uk-card-title">
+          {% translate "Subtotal:" %} {{ subtotal }} / {{ maxtotal }}</caption>
+        </h3>
       <thead>
         <tr>
           <th>{% translate "Round" %}</th>
@@ -43,7 +46,7 @@
           <td class="uk-text-right">
             {{ form.score }}
           <td>
-            <input type="submit" value="Enter" />
+            <input type="submit" class="uk-button uk-button-primary" value="Enter" />
         </form>
       </tr>
       {% endfor %}
@@ -51,6 +54,9 @@
   </div>
 
   <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+    <h3 class="uk-heading-bullet uk-card-title">
+      {% translate "Scores for" %} {{ team.team_name }}
+    </h3>
     <img src="{{ team.id }}/result.png" />
   </div>
 </div>

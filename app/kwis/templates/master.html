@@ -12,8 +12,8 @@
     <script src="{% static 'js/uikit.min.js' %}"></script>
     <script src="{% static 'js/uikit-icons.min.js' %}"></script>
     <style>
-        input[type="text"] {
-            width: 500px;
+        input[type=number] {
+            width: 100px;
         }
     </style>
 </head>
@@ -22,13 +22,13 @@
     {% if request.resolver_match.url_name == 'ranking' %}
     <meta http-equiv="refresh" content="60">
     <div class="uk-container uk-container-small">
-        {% else %}
-        <div class="uk-container uk-margin-top uk-margin-bottom">
-            {% endif %}
+    {% else %}
+    <div class="uk-container uk-margin-top uk-margin-bottom">
+    {% endif %}
             {% block content %}
             {% endblock %}
             {% include "partials/footer.html" %}
-        </div> <!-- /container -->
+    </div> <!-- /container -->
 </body>
 
 </html>

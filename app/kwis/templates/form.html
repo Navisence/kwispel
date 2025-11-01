@@ -12,7 +12,7 @@
 
 <div class="uk-child-width-1-2@m uk-grid-small uk-grid-match" uk-grid>
     <div class="uk-card uk-card-default uk-card-hover uk-card-body">
-        <table class="uk-table uk-table-hover">
+        <table class="uk-table uk-table-hover uk-table-middle">
             <caption>
                 <p class="uk-card-title">{% translate "Max score this round:" %} {{ rnd.max_score }}</p>
             </caption>
@@ -21,22 +21,26 @@
                     <th>{% translate "Team" %}</th>
                     <th class="uk-text-right">{% translate "Score" %}</th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tr>
                 <form action="{% url 'vote' rnd.id team.id %}" method="post">
                     {% csrf_token %}
                     <td>
-                        <label><a href="{% url 'team_detail' team.id %}">{{ team.team_name }}</a></label>
+                        <a href="{% url 'team_detail' team.id %}">{{ team.team_name }}</a>
                     </td>
                     <td class="uk-text-right">
                         {{ form.score.errors }}
                         {{ form.score }}
                     </td>
                     <td>
-                        <input type="submit" value="Enter" />
+                        <input type="submit" class="uk-button uk-button-primary" value="Enter" />
                     </td>
                 </form>
+                <td>
+                    <a class="uk-button uk-button-danger" href="{% url 'delete' rnd.id team.id %}">Delete</a>
+                </td>
             </tr>
         </table>
     </div>

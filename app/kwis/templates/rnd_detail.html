@@ -12,9 +12,11 @@
 
 <div class="uk-child-width-1-2@m uk-grid-small uk-grid-match" uk-grid>
   <div class="uk-card uk-card-default uk-card-hover uk-card-body">
-    <table class="uk-table uk-table-hover">
+    <table class="uk-table uk-table-hover uk-table-middle">
       <caption>
-        <p class="uk-card-title">{% translate "Max score this round:" %} {{ rnd.max_score }}</p>
+        <h3 class="uk-heading-bullet uk-card-title">
+          {% translate "Max score this round:" %} {{ rnd.max_score }}
+        </h3>
       </caption>
       <thead>
         <tr>
@@ -28,12 +30,12 @@
         <form action="{% url 'vote' rnd.id team.id %}" method="post">
           {% csrf_token %}
           <td>
-            <label><a href="{% url 'team_detail' team.id %}">{{ team.team_name }}</a></label>
+            <a href="{% url 'team_detail' team.id %}">{{ team.team_name }}</a>
           </td>
           <td class="uk-text-right">
             {{ form.score }}
           <td>
-            <input type="submit" value="Enter" />
+            <input type="submit" class="uk-button uk-button-primary" value="Enter" />
         </form>
       </tr>
       {% endfor %}
@@ -54,6 +56,9 @@
   </div>
 
   <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+    <h3 class="uk-heading-bullet uk-card-title">
+      {% translate "Scores for" %} {{ rnd.round_name }}
+    </h3>
     <img src="{{ rnd.id }}/result.png" />
   </div>
 </div>

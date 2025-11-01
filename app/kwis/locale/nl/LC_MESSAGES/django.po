@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-01 09:56+0000\n"
+"POT-Creation-Date: 2025-11-01 22:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,16 +23,16 @@ msgstr ""
 msgid "Team"
 msgstr "Ploeg"
 
-#: kwis/models.py:20 kwis/views.py:304 kwis/views.py:357
+#: kwis/models.py:20 kwis/views.py:305 kwis/views.py:358
 msgid "Teams"
 msgstr "Ploegen"
 
 #: kwis/models.py:32 kwis/templates/index.html:21
-#: kwis/templates/team_detail.html:19 kwis/views.py:498
+#: kwis/templates/team_detail.html:19 kwis/views.py:499
 msgid "Round"
 msgstr "Ronde"
 
-#: kwis/models.py:33 kwis/views.py:263 kwis/views.py:423
+#: kwis/models.py:33 kwis/views.py:264 kwis/views.py:424
 msgid "Rounds"
 msgstr "Rondes"
 
@@ -134,45 +134,50 @@ msgid "Subtotal:"
 msgstr "Subtotaal:"
 
 #. Translators: This indicates all scores for a round have been entered
-#: kwis/views.py:101
+#: kwis/views.py:102
 msgid "Complete"
 msgstr "Volledig"
 
+#: kwis/views.py:104
+#, python-format
+msgid "%(nrteams)d / %(totalteams)d teams"
+msgstr "%(nrteams)d / %(totalteams)d ploegen"
+
 #. Translators: This indicates all scores for all rounds have been entered
-#: kwis/views.py:129
+#: kwis/views.py:130
 msgid "Final ranking"
 msgstr "Einduitslag"
 
 #. Translators: This indicates no round has all scores entered
-#: kwis/views.py:132
+#: kwis/views.py:133
 msgid "No results yet"
 msgstr "Nog geen resultaten"
 
-#: kwis/views.py:134
+#: kwis/views.py:135
 msgid "Ranking after "
 msgstr "Rangschikking na "
 
-#: kwis/views.py:264 kwis/views.py:305
+#: kwis/views.py:265 kwis/views.py:306
 msgid "Scores"
 msgstr "Scores"
 
-#: kwis/views.py:266 kwis/views.py:307
+#: kwis/views.py:267 kwis/views.py:308
 #, python-format
 msgid "Scores for %s"
 msgstr "Score voor %s"
 
-#: kwis/views.py:358
+#: kwis/views.py:359
 msgid "Cumulative score"
 msgstr "Cumulatieve score"
 
-#: kwis/views.py:424
+#: kwis/views.py:425
 msgid "Cumulative scores and progress"
 msgstr "Cumulatieve score en voortgang"
 
-#: kwis/views.py:425
+#: kwis/views.py:426
 msgid "Statistics"
 msgstr "Statistiek"
 
-#: kwis/views.py:499
+#: kwis/views.py:500
 msgid "Position"
 msgstr "Positie"
