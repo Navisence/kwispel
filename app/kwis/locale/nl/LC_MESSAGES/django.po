@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-30 21:03+0100\n"
+"POT-Creation-Date: 2025-11-01 09:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,22 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: kwis/models.py:19 kwis/templates/form.html:19 kwis/templates/index.html:41
-#: kwis/templates/ranking.html:17 kwis/templates/ranking.html:24
-#: kwis/templates/rnd_detail.html:19
+#: kwis/models.py:19 kwis/templates/form.html:21 kwis/templates/index.html:56
+#: kwis/templates/ranking.html:15 kwis/templates/rnd_detail.html:21
 msgid "Team"
 msgstr "Ploeg"
 
-#: kwis/models.py:20 kwis/views.py:302 kwis/views.py:355
+#: kwis/models.py:20 kwis/views.py:304 kwis/views.py:357
 msgid "Teams"
 msgstr "Ploegen"
 
-#: kwis/models.py:32 kwis/templates/index.html:16
-#: kwis/templates/team_detail.html:19 kwis/views.py:502
+#: kwis/models.py:32 kwis/templates/index.html:21
+#: kwis/templates/team_detail.html:19 kwis/views.py:498
 msgid "Round"
 msgstr "Ronde"
 
-#: kwis/models.py:33 kwis/views.py:261 kwis/views.py:424
+#: kwis/models.py:33 kwis/views.py:263 kwis/views.py:423
 msgid "Rounds"
 msgstr "Rondes"
 
@@ -53,71 +52,76 @@ msgstr "Een team kan slecht 1 score per ronde hebben."
 msgid "Form"
 msgstr "Formulier"
 
-#: kwis/templates/form.html:16 kwis/templates/rnd_detail.html:16
+#: kwis/templates/form.html:17 kwis/templates/rnd_detail.html:17
 msgid "Max score this round:"
 msgstr "Max score deze ronde:"
 
-#: kwis/templates/form.html:20 kwis/templates/ranking.html:18
-#: kwis/templates/ranking.html:25 kwis/templates/rnd_detail.html:20
-#: kwis/templates/team_detail.html:20
+#: kwis/templates/form.html:22 kwis/templates/ranking.html:16
+#: kwis/templates/rnd_detail.html:22 kwis/templates/team_detail.html:20
 msgid "Score"
 msgstr "Score"
 
-#: kwis/templates/form.html:44 kwis/templates/index.html:70
-#: kwis/templates/ranking.html:43 kwis/templates/rnd_detail.html:60
-#: kwis/templates/team_detail.html:57
-msgid "Links:"
-msgstr "Links:"
-
-#: kwis/templates/form.html:44 kwis/templates/ranking.html:43
-#: kwis/templates/rnd_detail.html:60 kwis/templates/team_detail.html:57
-msgid "Index"
-msgstr "Overzicht"
-
-#: kwis/templates/form.html:45 kwis/templates/index.html:70
-#: kwis/templates/rnd_detail.html:61 kwis/templates/team_detail.html:58
-msgid "Ranking"
-msgstr "Rangschikking"
-
-#: kwis/templates/form.html:46 kwis/templates/index.html:70
-#: kwis/templates/ranking.html:43 kwis/templates/rnd_detail.html:62
-#: kwis/templates/team_detail.html:59
-msgid "Admin"
-msgstr "Admin"
-
-#: kwis/templates/index.html:5
+#: kwis/templates/index.html:5 kwis/templates/index.html:10
 msgid "Kwispel jury overview"
 msgstr "Kwispel jury overzicht"
 
-#: kwis/templates/index.html:14
+#: kwis/templates/index.html:17
 msgid "Overview of all rounds"
 msgstr "Overzicht van alle rondes"
 
-#: kwis/templates/index.html:17 kwis/templates/index.html:42
+#: kwis/templates/index.html:22 kwis/templates/index.html:57
 msgid "Progress"
 msgstr "Voortgang"
 
-#: kwis/templates/index.html:32
+#: kwis/templates/index.html:42
 msgid "No rounds are available."
 msgstr "Er zijn geen rondes beschikbaar."
 
-#: kwis/templates/index.html:39
+#: kwis/templates/index.html:52
 msgid "Overview of all teams"
 msgstr "Overzicht van alle ploegen"
 
-#: kwis/templates/index.html:57
+#: kwis/templates/index.html:77
 msgid "No teams are available."
 msgstr "Er zijn geen ploegen beschikbaar."
+
+#: kwis/templates/index.html:84
+msgid "Progress per round"
+msgstr "Voortgang per ronde"
+
+#: kwis/templates/index.html:90
+msgid "Progress per team"
+msgstr "Voortgang per team"
+
+#: kwis/templates/partials/footer.html:3
+msgid "Links:"
+msgstr "Links:"
+
+#: kwis/templates/partials/footer.html:5
+msgid "Index"
+msgstr "Overzicht"
+
+#: kwis/templates/partials/footer.html:8
+msgid "Ranking"
+msgstr "Rangschikking"
+
+#: kwis/templates/partials/footer.html:12
+msgid "Admin"
+msgstr "Admin"
+
+#: kwis/templates/partials/footer.html:14
+msgid "Login"
+msgstr "Login"
 
 #: kwis/templates/ranking.html:5
 msgid "Rankings"
 msgstr "Rangschikking"
 
-#: kwis/templates/ranking.html:16 kwis/templates/ranking.html:23
+#: kwis/templates/ranking.html:14
 msgid "Place"
 msgstr "Plaats"
 
-#: kwis/templates/ranking.html:39
+#: kwis/templates/ranking.html:32
 msgid "No sorted results found."
 msgstr "Geen gesorteerde resultaten gevonden."
 
@@ -130,53 +134,45 @@ msgid "Subtotal:"
 msgstr "Subtotaal:"
 
 #. Translators: This indicates all scores for a round have been entered
-#: kwis/views.py:99
+#: kwis/views.py:101
 msgid "Complete"
 msgstr "Volledig"
 
 #. Translators: This indicates all scores for all rounds have been entered
-#: kwis/views.py:127
+#: kwis/views.py:129
 msgid "Final ranking"
 msgstr "Einduitslag"
 
 #. Translators: This indicates no round has all scores entered
-#: kwis/views.py:130
+#: kwis/views.py:132
 msgid "No results yet"
 msgstr "Nog geen resultaten"
 
-#: kwis/views.py:132
+#: kwis/views.py:134
 msgid "Ranking after "
 msgstr "Rangschikking na "
 
-#: kwis/views.py:262 kwis/views.py:303
+#: kwis/views.py:264 kwis/views.py:305
 msgid "Scores"
 msgstr "Scores"
 
-#: kwis/views.py:264 kwis/views.py:305
+#: kwis/views.py:266 kwis/views.py:307
 #, python-format
 msgid "Scores for %s"
 msgstr "Score voor %s"
 
-#: kwis/views.py:356
+#: kwis/views.py:358
 msgid "Cumulative score"
 msgstr "Cumulatieve score"
 
-#: kwis/views.py:358
-msgid "Progress per team"
-msgstr "Voortgang per team"
-
-#: kwis/views.py:425
+#: kwis/views.py:424
 msgid "Cumulative scores and progress"
 msgstr "Cumulatieve score en voortgang"
 
-#: kwis/views.py:426
+#: kwis/views.py:425
 msgid "Statistics"
 msgstr "Statistiek"
 
-#: kwis/views.py:429
-msgid "Progress per round"
-msgstr "Voortgang per ronde"
-
-#: kwis/views.py:503
+#: kwis/views.py:499
 msgid "Position"
 msgstr "Positie"
