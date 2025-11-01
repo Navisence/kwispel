@@ -6,40 +6,31 @@
 {% endblock %}
 
 {% block content %}
-    <meta http-equiv="refresh" content="60">
-    <div class="uk-container uk-container-large">
-    {% if sorted %}
-      <div class="uk-text-lead uk-text-center">{{ caption }}</div>
-      <div class="uk-child-width-1-2@m uk-grid-small" uk-grid>
-        <div class="uk-card uk-card-default uk-card-body uk-text-lead uk-padding-small">
-          <div uk-grid>
-              <div class="uk-width-1-5 uk-text-right">{% translate "Place" %}</div>
-              <div class="uk-width-3-5">{% translate "Team" %}</div>
-              <div class="uk-width-1-5">{% translate "Score" %}</div>
-          </div>
-        </div>
-        <div class="uk-visible@m uk-card uk-card-default uk-card-body uk-text-lead uk-padding-small">
-          <div uk-grid>
-              <div class="uk-width-1-5 uk-text-right">{% translate "Place" %}</div>
-              <div class="uk-width-3-5">{% translate "Team" %}</div>
-              <div class="uk-width-1-5">{% translate "Score" %}</div>
-          </div>
-        </div>
+{% if sorted %}
+<div class="uk-text-lead uk-text-center">{{ caption }}</div>
+<table class="uk-table uk-table-striped uk-text-lead">
+    <thead>
+        <tr>
+            <th class="uk-text-right">{% translate "Place" %}</th>
+            <th>{% translate "Team" %}</th>
+            <th class="uk-text-right">{% translate "Score" %}</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for result in sorted %}
-        <div class="uk-card uk-card-default uk-card-body uk-text-large uk-padding-small uk-padding-remove-vertical">
-            <div uk-grid>
-                <div class="uk-width-1-5 uk-text-right">{{ result.0 }}</div>
-                <div class="uk-width-3-5">{{ result.1 }}</div>
-                <div class="uk-width-1-5">{{ result.2 }}</div>
-        </div>
-        </div>
+        <tr>
+            <td class="uk-text-right">{{ result.0 }}</td>
+            <td>{{ result.1 }}</td>
+            <td class="uk-text-right">{{ result.2 }}</td>
+        </tr>
         {% endfor %}
-      </div>
-    {% else %}
-      <p>{% translate "No sorted results found." %}</p>
-    {% endif %}
+    </tbody>
+</table>
 
-    <HR>
-    {% translate "Links:" %} <a href="{% url 'index' %}">{% translate "Index" %}</a>, <a href="/admin/">{% translate "Admin" %}</a>
-    </div> <!-- /container -->
+{% else %}
+<div class="uk-text-lead uk-text-center">
+    {% translate "No sorted results found." %}
+</div>
+{% endif %}
+
 {% endblock %}

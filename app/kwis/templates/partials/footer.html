@@ -1,0 +1,15 @@
+{% load i18n %}
+<HR>
+    {% translate "Links:" %}
+    {% if request.resolver_match.url_name != 'index' %}
+    <a href="{% url 'index' %}">{% translate "Index" %}</a>,
+    {% endif %}
+    {% if request.resolver_match.url_name != 'ranking' %}
+    <a href="{% url 'ranking' %}">{% translate "Ranking" %}</a>,
+    {% endif %}
+
+{% if user.is_staff %}
+<a href="{% url 'admin:index' %}">{% translate "Admin" %}</a>
+{% else %}
+<a href="{% url 'admin:login' %}">{% translate "Login" %}</a>
+{% endif %}

@@ -6,67 +6,91 @@
 {% endblock %}
 
 {% block content %}
-    <div class="uk-container">
-      <div class="uk-child-width-1-2@m" uk-grid>
-        <div>
+
+<h1 class="uk-heading-bullet">{% translate "Kwispel jury overview" %}</h1>
+<div class="uk-child-width-1-2@m uk-grid-small uk-grid-match" uk-grid>
+    <div class="uk-card uk-card-default uk-card-hover uk-card-body">
         {% if round_list %}
-          <table class="table table-condensed table-striped">
-            <caption>{% translate "Overview of all rounds" %}</caption>
+        <table class="uk-table uk-table-hover">
+            <caption>
+                <h3 class="uk-heading-bullet uk-card-title">
+                    {% translate "Overview of all rounds" %}
+                </h3>
+            </caption>
             <thead>
-              <th>{% translate "Round" %}</th>
-              <th>{% translate "Progress" %}</th>
+                <th>{% translate "Round" %}</th>
+                <th>{% translate "Progress" %}</th>
             </thead>
             {% for round, status in round_list %}
             <tr>
-              <td>
-                <a href="{% url 'rnd_detail' round.id %}">{{ round.round_name }}</a>
-              </td>
-              <td>
-               {{ status }}
-              </td>
+                <td>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'rnd_detail' round.id %}">{{ round.round_name }}</a>
+                    {% else %}
+                    {{ round.round_name }}
+                    {% endif %}
+                </td>
+                <td>
+                    {{ status }}
+                </td>
             </tr>
             {% endfor %}
-          </table>
+        </table>
 
         {% else %}
-          <p>{% translate "No rounds are available." %}</p>
+        <h3 class="uk-heading-bullet uk-card-title">
+            {% translate "No rounds are available." %}
+        </h3>
         {% endif %}
-        </div>
-    
-        <div>
+    </div>
+
+    <div class="uk-card uk-card-default uk-card-hover uk-card-body">
         {% if team_list %}
-          <table class="table table-condensed table-striped">
-          <caption>{% translate "Overview of all teams" %}</caption>
+        <table class="uk-table uk-table-hover">
+            <caption>
+                <h3 class="uk-heading-bullet uk-card-title">
+                    {% translate "Overview of all teams" %}
+                </h3>
+            </caption>
             <thead>
-              <th>{% translate "Team" %}</th>
-              <th>{% translate "Progress" %}</th>
+                <th>{% translate "Team" %}</th>
+                <th>{% translate "Progress" %}</th>
             </thead>
             {% for team, status, subtot in team_list %}
             <tr>
-              <td>
-                <a href="{% url 'team_detail' team.id %}">{{ team.team_name }}</a>
-              </td>
-              <td>
-               {{ status }}
-              </td>
+                <td>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'team_detail' team.id %}">{{ team.team_name }}</a>
+                    {% else %}
+                    {{ team.team_name }}
+                    {% endif %}
+                </td>
+                <td>
+                    {{ status }}
+                </td>
             </tr>
             {% endfor %}
-          </table>
+        </table>
 
         {% else %}
-          <p>{% translate "No teams are available." %}</p>
+        <h3 class="uk-heading-bullet uk-card-title">
+            {% translate "No teams are available." %}
+        </h3>
         {% endif %}
-        </div>
+    </div>
 
-        <div>
-          <a href="rnd_overview.png"><img class="img-responsive img-rounded center-block" src="rnd_overview.png" /></a>
-        </div>
-        <div>
-          <a href="team_overview.png"><img class="img-responsive img-rounded center-block" src="team_overview.png" /></a>
-        </div>
-      </div> <!-- /grid -->
+    <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+        <h3 class="uk-heading-bullet uk-card-title">
+            {% translate "Progress per round" %}
+        </h3>
+        <a href="rnd_overview.png"><img class="img-responsive img-rounded center-block" src="rnd_overview.png" /></a>
+    </div>
+    <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+        <h3 class="uk-heading-bullet uk-card-title">
+            {% translate "Progress per team" %}
+        </h3>
+        <a href="team_overview.png"><img class="img-responsive img-rounded center-block" src="team_overview.png" /></a>
+    </div>
+</div> <!-- /grid -->
 
-    <HR>
-    {% translate "Links:" %} <a href="{% url 'ranking' %}">{% translate "Ranking" %}</a>, <a href="/admin/">{% translate "Admin" %}</a>
-    </div> <!-- /container -->
 {% endblock %}

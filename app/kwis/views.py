@@ -100,7 +100,7 @@ def index(request):
             # Translators: This indicates all scores for a round have been entered
             round_status.append((r, _("Complete")))
         else:
-            round_status.append((r, "%d / %d" % (r.answer_set.count(), team_list.count())))
+            round_status.append((r, _("%d / %d teams") % (r.answer_set.count(), team_list.count())))
 
     team_status = []
     for t in team_list:
@@ -258,7 +258,7 @@ def team_result(request, team_id):
     ax.bar(ind, maxima, width, color=colors['score_bad'], bottom=scores)
 
     # Set labels and title
-    ax.set_xticks(ind + width / 2)
+    ax.set_xticks(ind)
     ax.set_xticklabels(names)
     ax.set_xlabel(_("Rounds"))
     ax.set_ylabel(_("Scores"))
@@ -299,7 +299,7 @@ def rnd_result(request, rnd_id):
     ax.barh(ind, scores, width, color=colors['score_good'])
 
     # Set labels and title
-    ax.set_yticks(ind + width / 2)
+    ax.set_yticks(ind)
     ax.set_yticklabels(names)
     ax.set_ylabel(_("Teams"))
     ax.set_xlabel(_("Scores"))
@@ -356,9 +356,6 @@ def team_overview(request):
     ax.set_xticklabels(names, rotation=dynamic_rotation(Team.objects.count()), ha='right')
     ax.set_xlabel(_("Teams"))
     ax.set_ylabel(_("Cumulative score"))
-
-    title = _(u"Progress per team")
-    ax.set_title(title)
 
     ax.grid(True)
 
@@ -427,9 +424,6 @@ def rnd_overview(request):
     ax1.set_ylabel(_("Cumulative scores and progress"))
     ax2.set_ylabel(_("Statistics"))
     ax2.set_ylim([0, 1])
-
-    title = _(u"Progress per round")
-    ax1.set_title(title)
 
     ax1.grid(True)
 

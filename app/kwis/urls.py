@@ -1,8 +1,13 @@
 from django.urls import path
+from django.contrib import admin
 from django.views.decorators.cache import cache_page
 from . import views
 
 cache_timeout = 20  # seconds
+
+admin.site.site_title = "Kwispel Admin"
+admin.site.site_header = "Kwispel Administration"
+admin.site.index_title = "Kwispel Admin Portal"
 
 urlpatterns = [
     path('', views.index, name='index'),
