@@ -6,10 +6,9 @@ django-admin compilemessages
 if [ ! -f /home/app/web/data/db.sqlite3 ]; then
     echo "Creating initial database"
     python manage.py migrate
-    # Create an initial superuser
-#    python manage.py createsuperuser --noinput
     # Collect static files
     python manage.py collectstatic --noinput
+    # TODO: create a superuser
 fi
 
 exec "$@"

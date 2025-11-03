@@ -1,6 +1,6 @@
-# kwispel
+# Kwispel
 
-*kwispel* is a Django app to manage quiz results and show rankings.
+*Kwispel* is a Django app to manage quiz results and show rankings.
 
 ## Features
 
@@ -30,9 +30,14 @@ For development purposes, instead of using the `docker-compose.prod.yml` file, y
 
 To create an admin user, go into the running container and `./manage.py createsuperuser`.
 
+## Translations
+
+For translating the app into other languages, it is recommended to follow [the instructions for translating from the Django Manual]
+(https://docs.djangoproject.com/en/5.2/topics/i18n/translation/#localization-how-to-create-language-files)
+
 ## TODO
 
-* You'll need to provide `.env.dev` and/or `.env.prod` in the root of this project before starting Docker. These files need to contain the following values
+* You'll need to provide `.env.dev` and/or `.env.prod` in the root of this project before starting Docker. These files need to contain the following values:
 
 ```sh
 DEBUG=0 # 1 for dev
@@ -41,33 +46,10 @@ DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] # good default
 DJANGO_CSRF_TRUSTED_ORIGINS=http://127.0.0.1:1337 # should contain actual URL used to access the application
 ```
 
-* An initial admin user should be made.
+* An initial admin user should be made, or instructions should be given.
+* Suggestions for SSL handling in front of this app can be added.
 
 ## Background
 
 This is an implementation of kwispel using Docker for easy deployment, 
 based on information gathered from https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx/
-
----
----
----
-
-The following should be no longer needed. Making sure before removing here.
-
-After installation, run the following commands:
- * django-admin compilemessages
- * manage.py makemigrations
- * manage.py migrate
- * manage.py collectstatic
- * manage.py createsuperuser
- * manage.py runserver
-
-## Static files
-To serve static files directly from nginx, add a snippet like the following
-to the nginx server configuration.
-
-```
-location /static {
-    alias /path/to/static;
-}
-```
