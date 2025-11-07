@@ -44,6 +44,10 @@ DEBUG=0 # 1 for dev
 SECRET_KEY= # to fill in
 DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] # good default
 DJANGO_CSRF_TRUSTED_ORIGINS=http://127.0.0.1:1337 # should contain actual URL used to access the application
+DJANGO_ENV=development
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_EMAIL="admin@example.com"
+DJANGO_SUPERUSER_PASSWORD="changetheadminpassword"
 ```
 
 * An initial admin user should be made, or instructions should be given.
