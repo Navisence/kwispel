@@ -1,0 +1,64 @@
+{% extends "master.html" %}
+{% load i18n %}
+
+{% block title %}
+{% translate "Details for" %} {{ team.team_name }}
+{% endblock %}
+
+{% block content %}
+
+<h1 class="uk-heading-bullet">{{ team.team_name }}</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<div class="uk-child-width-1-2@m uk-grid-small uk-grid-match" uk-grid>
+  <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+    <table class="uk-table uk-table-hover uk-table-middle">
+      <caption>
+        <h3 class="uk-heading-bullet uk-card-title">
+          {% translate "Subtotal:" %} {{ subtotal }} / {{ maxtotal }}</caption>
+        </h3>
+      <thead>
+        <tr>
+          <th>{% translate "Round" %}</th>
+          <th class="uk-text-right">{% translate "Score" %}</th>
+          <th></th>
+        </tr>
+      </thead>
+      {% for answer in team.answer_set.all %}
+      <tr>
+        <td>
+          <a href="{% url 'rnd_detail' answer.rnd.id %}">{{ answer.rnd.round_name }}</a>
+        </td>
+        <td class="uk-text-right">
+          <a href="{% url 'vote' answer.rnd.id answer.team.id %}">{{ answer.score }}</a>
+        </td>
+        <td>
+        </td>
+      </tr>
+      {% endfor %}
+      {% for rnd, form in round_list_todo %}
+      <tr>
+        <form action="{% url 'vote' rnd.id team.id %}" method="post">
+          {% csrf_token %}
+          <td>
+            <label><a href="{% url 'rnd_detail' rnd.id %}">{{ rnd.round_name }}</a></label>
+          </td>
+          <td class="uk-text-right">
+            {{ form.score }}
+          <td>
+            <input type="submit" class="uk-button uk-button-primary" value="Enter" />
+        </form>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+    <h3 class="uk-heading-bullet uk-card-title">
+      {% translate "Scores for" %} {{ team.team_name }}
+    </h3>
+    <img src="{{ team.id }}/result.png" />
+  </div>
+</div>
+
+{% endblock %}

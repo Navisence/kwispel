@@ -1,0 +1,36 @@
+{% extends "master.html" %}
+{% load i18n %}
+
+{% block title %}
+{% translate "Rankings" %}
+{% endblock %}
+
+{% block content %}
+{% if sorted %}
+<div class="uk-text-lead uk-text-center">{{ caption }}</div>
+<table class="uk-table uk-table-striped uk-text-lead">
+    <thead>
+        <tr>
+            <th class="uk-text-right">{% translate "Place" %}</th>
+            <th>{% translate "Team" %}</th>
+            <th class="uk-text-right">{% translate "Score" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for result in sorted %}
+        <tr>
+            <td class="uk-text-right">{{ result.0 }}</td>
+            <td>{{ result.1 }}</td>
+            <td class="uk-text-right">{{ result.2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+<div class="uk-text-lead uk-text-center">
+    {% translate "No sorted results found." %}
+</div>
+{% endif %}
+
+{% endblock %}

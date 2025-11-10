@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+{% load i18n %}
+<html>
+
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'css/uikit.min.css' %}" />
+    <script src="{% static 'js/uikit.min.js' %}"></script>
+    <script src="{% static 'js/uikit-icons.min.js' %}"></script>
+    <style>
+        input[type=number] {
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    {% if request.resolver_match.url_name == 'ranking' %}
+    <meta http-equiv="refresh" content="60">
+    <div class="uk-container uk-container-small">
+    {% else %}
+    <div class="uk-container uk-margin-top uk-margin-bottom">
+    {% endif %}
+        {% block content %}
+        {% endblock %}
+        <HR>
+        {% translate "Links:" %}
+        {% if request.resolver_match.url_name != 'index' %}
+        <a href="{% url 'index' %}">{% translate "Index" %}</a>,
+        {% endif %}
+
+        {% if request.resolver_match.url_name != 'ranking' %}
+        <a href="{% url 'ranking' %}">{% translate "Ranking" %}</a>,
+        {% endif %}
+
+        {% if user.is_staff %}
+        <a href="{% url 'admin:index' %}">{% translate "Admin" %}</a>
+        {% else %}
+        <a href="{% url 'admin:login' %}">{% translate "Login" %}</a>
+        {% endif %}
+    </div> <!-- /container -->
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+{% extends "master.html" %}
+{% load i18n %}
+
+{% block title %}
+{% translate "Details for" %} {{ round.round_name }}
+{% endblock %}
+
+{% block content %}
+
+<h1 class="uk-heading-bullet">{{ rnd.round_name }}</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<div class="uk-child-width-1-2@m uk-grid-small uk-grid-match" uk-grid>
+  <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+    <table class="uk-table uk-table-hover uk-table-middle">
+      <caption>
+        <h3 class="uk-heading-bullet uk-card-title">
+          {% translate "Max score this round:" %} {{ rnd.max_score }}
+        </h3>
+      </caption>
+      <thead>
+        <tr>
+          <th>{% translate "Team" %}</th>
+          <th class="uk-text-right">{% translate "Score" %}</th>
+          <th></th>
+        </tr>
+      </thead>
+      {% for team in team_list_todo %}
+      <tr>
+        <form action="{% url 'vote' rnd.id team.id %}" method="post">
+          {% csrf_token %}
+          <td>
+            <a href="{% url 'team_detail' team.id %}">{{ team.team_name }}</a>
+          </td>
+          <td class="uk-text-right">
+            {{ form.score }}
+          <td>
+            <input type="submit" class="uk-button uk-button-primary" value="Enter" />
+        </form>
+      </tr>
+      {% endfor %}
+
+      {% for answer in rnd.answer_set.all %}
+      <tr>
+        <td>
+          <a href="{% url 'team_detail' answer.team.id %}">{{ answer.team.team_name }}</a>
+        </td>
+        <td class="uk-text-right">
+          <a href="{% url 'vote' answer.rnd.id answer.team.id %}">{{ answer.score }}</a>
+        </td>
+        <td>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+    <h3 class="uk-heading-bullet uk-card-title">
+      {% translate "Scores for" %} {{ rnd.round_name }}
+    </h3>
+    <img src="{{ rnd.id }}/result.png" />
+  </div>
+</div>
+
+{% endblock %}
