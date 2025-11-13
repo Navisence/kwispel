@@ -125,9 +125,14 @@ def ranking(request):
     # First identify completed rounds.
     rnd_complete = get_completed_rounds()
 
+    # Nothing to hide
+    hidden = 0
+
     if len(rnd_complete) == Round.objects.count():
         # Translators: This indicates all scores for all rounds have been entered
         caption = _("Final ranking")
+        # Hiding the final top 3 from the ranking view for dramatic effect
+        hidden = 3
     elif len(rnd_complete) == 0:
         # Translators: This indicates no round has all scores entered
         caption = _("No results yet")
@@ -139,7 +144,7 @@ def ranking(request):
 
     ranking = get_ranked_results(rnd_complete)
 
-    return render(request, 'ranking.html', {'sorted': ranking, 'caption': caption})
+    return render(request, 'ranking.html', {'sorted': ranking, 'caption': caption, 'hidden': hidden})
 
 
 @login_required
