@@ -8,7 +8,10 @@
 {% block content %}
 {% if sorted %}
 <div class="uk-text-lead uk-text-center">{{ caption }}</div>
-<table class="uk-table uk-table-striped uk-text-lead">
+
+<button id="reveal-btn" hidden>{% translate "Reveal Next!" %}</button>
+
+<table id="ranking" class="uk-table uk-table-striped uk-text-lead">
     <thead>
         <tr>
             <th class="uk-text-right">{% translate "Place" %}</th>
@@ -18,7 +21,7 @@
     </thead>
     <tbody>
         {% for result in sorted %}
-        <tr>
+        <tr class="{% if forloop.counter0 < hidden %}hidden-row{% endif %}">
             <td class="uk-text-right">{{ result.0 }}</td>
             <td>{{ result.1 }}</td>
             <td class="uk-text-right">{{ result.2 }}</td>
@@ -26,6 +29,28 @@
         {% endfor %}
     </tbody>
 </table>
+
+<script>
+  const revealButton = document.getElementById('reveal-btn');
+  const hiddenRows = document.querySelectorAll('.hidden-row');
+  let revealIndex = 0;
+
+    if (hiddenRows.length > 0) {
+        revealButton.hidden = false;
+    }
+
+  revealButton.addEventListener('click', () => {
+    if (revealIndex < hiddenRows.length) {
+      const row = hiddenRows[hiddenRows.length - 1 - revealIndex];
+      row.classList.remove('hidden-row');
+      row.classList.add('reveal');
+      revealIndex++;
+      if (revealIndex === hiddenRows.length) {
+        revealButton.hidden = true;
+      }
+    }
+  });
+</script>
 
 {% else %}
 <div class="uk-text-lead uk-text-center">
