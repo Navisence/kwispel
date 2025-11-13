@@ -23,7 +23,7 @@ python manage.py migrate --noinput
 
 # translation files are created/updated with makemessages. These files should be
 # part of version control.
-# django-admin makemessages -a -l nl -e html,py
+# django-admin makemessages -l nl -e html,py
 django-admin compilemessages
 
 if [ "$DJANGO_ENV" = "production" ]; then
