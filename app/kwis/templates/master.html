@@ -28,20 +28,28 @@
         {% block content %}
         {% endblock %}
         <HR>
-        {% translate "Links:" %}
-        {% if request.resolver_match.url_name != 'index' %}
-        <a href="{% url 'index' %}">{% translate "Index" %}</a>,
-        {% endif %}
+        <div class="uk-clearfix">
+            <div class="uk-float-right">
+                <a href="https://github.com/Navisence/kwispel" target="_blank" uk-icon="icon: github"></a>
+            </div>
 
-        {% if request.resolver_match.url_name != 'ranking' %}
-        <a href="{% url 'ranking' %}">{% translate "Ranking" %}</a>,
-        {% endif %}
+            <div class="uk-float-left">
+                {% translate "Links:" %}
+                {% if request.resolver_match.url_name != 'index' %}
+                <a href="{% url 'index' %}">{% translate "Index" %}</a>,
+                {% endif %}
 
-        {% if user.is_staff %}
-        <a href="{% url 'admin:index' %}">{% translate "Admin" %}</a>
-        {% else %}
-        <a href="{% url 'admin:login' %}">{% translate "Login" %}</a>
-        {% endif %}
+                {% if request.resolver_match.url_name != 'ranking' %}
+                <a href="{% url 'ranking' %}">{% translate "Ranking" %}</a>,
+                {% endif %}
+
+                {% if user.is_staff %}
+                <a href="{% url 'admin:index' %}">{% translate "Admin" %}</a>
+                {% else %}
+                <a href="{% url 'admin:login' %}">{% translate "Login" %}</a>
+                {% endif %}
+            </div>
+        </div> <!-- uk-clearfix -->
     </div> <!-- /container -->
 </body>
 
