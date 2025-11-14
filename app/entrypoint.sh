@@ -26,10 +26,8 @@ python manage.py migrate --noinput
 # django-admin makemessages -l nl -e html,py
 django-admin compilemessages
 
-if [ "$DJANGO_ENV" = "production" ]; then
-    echo "Collecting static files..."
-    python manage.py collectstatic --noinput
-fi
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
 
 echo "Ensuring superuser exists..."
 python manage.py shell <<EOF
