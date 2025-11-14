@@ -9,7 +9,17 @@
 {% if sorted %}
 <div class="uk-text-lead uk-text-center">{{ caption }}</div>
 
-<button id="reveal-btn" hidden>{% translate "Reveal Next!" %}</button>
+{% if user.is_staff %}
+<button id="reveal">Reveal Next</button>
+
+<script>
+const a_protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+const adminsocket = new WebSocket(a_protocol + window.location.host + "/ws/ranking/");
+document.getElementById('reveal').addEventListener('click', () => {
+  adminsocket.send(JSON.stringify({ action: "reveal_next" }));
+});
+</script>
+{% endif %}
 
 <table id="ranking" class="uk-table uk-table-striped uk-text-lead">
     <thead>
@@ -31,25 +41,20 @@
 </table>
 
 <script>
-  const revealButton = document.getElementById('reveal-btn');
-  const hiddenRows = document.querySelectorAll('.hidden-row');
-  let revealIndex = 0;
+const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+const socket = new WebSocket(protocol + window.location.host + "/ws/ranking/");
+const hiddenRows = document.querySelectorAll('.hidden-row');
+let revealIndex = 0;
 
-    if (hiddenRows.length > 0) {
-        revealButton.hidden = false;
-    }
-
-  revealButton.addEventListener('click', () => {
-    if (revealIndex < hiddenRows.length) {
-      const row = hiddenRows[hiddenRows.length - 1 - revealIndex];
-      row.classList.remove('hidden-row');
-      row.classList.add('reveal');
-      revealIndex++;
-      if (revealIndex === hiddenRows.length) {
-        revealButton.hidden = true;
-      }
-    }
-  });
+socket.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  if (data.action === "reveal_next" && revealIndex < hiddenRows.length) {
+    const row = hiddenRows[hiddenRows.length - 1 - revealIndex];
+    row.classList.remove('hidden-row');
+    row.classList.add('reveal');
+    revealIndex++;
+  }
+};
 </script>
 
 {% else %}
