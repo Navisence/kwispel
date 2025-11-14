@@ -12,9 +12,67 @@
     <script src="{% static 'js/uikit.min.js' %}"></script>
     <script src="{% static 'js/uikit-icons.min.js' %}"></script>
     <style>
+        {% if request.resolver_match.url_name == 'ranking' %}
+        /* --- Hidden row shimmer effect --- */
+        .hidden-row {
+            position: relative;
+            color: transparent;
+        }
+
+        .hidden-row::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, #999 25%, #ccc 50%, #999 75%);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+            z-index: 1;
+            border-radius: 0.25rem;
+        }
+
+        .hidden-row td {
+            visibility: hidden;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Reveal animation for dramatic effect */
+        .reveal {
+            animation: fadeIn 5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); opacity: 1; }
+        }
+
+        #reveal-btn {
+            display: block;
+            margin: 1rem auto;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        #reveal-btn:hover {
+            background: #0056b3;
+        }
+        {% else %}
         input[type=number] {
             width: 100px;
         }
+        {% endif %}
     </style>
 </head>
 

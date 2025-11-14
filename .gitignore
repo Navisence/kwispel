@@ -72,3 +72,5 @@ staticfiles/
 
 # Application config
 .env*
+
+*.code-workspace
