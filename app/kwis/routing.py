@@ -1,6 +1,6 @@
 from django.urls import re_path
-from . import consumers
+from .consumers import RefreshConsumer
 
 websocket_urlpatterns = [
-    re_path(r"ws/ranking/$", consumers.RankingConsumer.as_asgi()),  # type: ignore[arg-type]
+    re_path(r"ws/refresh/$", RefreshConsumer.as_asgi()),  # type: ignore[arg-type]
 ]

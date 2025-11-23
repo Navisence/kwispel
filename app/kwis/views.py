@@ -5,7 +5,8 @@ from django import forms
 from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required
 
-from .models import Round, Team, Answer
+from .models import Quiz, Round, Team, Answer
+from .websocket_utils import trigger_refresh
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -92,6 +93,7 @@ def index(request):
     """
     List all teams and all rounds. This is the main jury view from where to add scores.
     """
+    quiz_name = Quiz.objects.first().name
     round_list = Round.objects.all()
     team_list = Team.objects.all()
 
@@ -113,7 +115,7 @@ def index(request):
         team_status.append((t, "%.1f / %.1f" % (subtotal, maxtotal), subtotal))
     team_status.sort(key=lambda tup: tup[2], reverse=True)
 
-    context = {'round_list': round_status, 'team_list': team_status}
+    context = {'round_list': round_status, 'team_list': team_status, 'quiz_name': quiz_name }
     return render(request, 'index.html', context)
 
 
@@ -132,7 +134,8 @@ def ranking(request):
         # Translators: This indicates all scores for all rounds have been entered
         caption = _("Final ranking")
         # Hiding the final top 3 from the ranking view for dramatic effect
-        hidden = 3
+        quiz = Quiz.objects.first()
+        hidden = max(0, 3 - quiz.reveal_count) if quiz else 3
     elif len(rnd_complete) == 0:
         # Translators: This indicates no round has all scores entered
         caption = _("No results yet")
@@ -144,7 +147,7 @@ def ranking(request):
 
     ranking = get_ranked_results(rnd_complete)
 
-    return render(request, 'ranking.html', {'sorted': ranking, 'caption': caption, 'hidden': hidden})
+    return render(request, 'ranking.html', {'sorted': ranking, 'caption': caption, 'hidden': hidden, 'quiz_name': Quiz.objects.first().name })
 
 
 @login_required
@@ -253,6 +256,20 @@ def delete(request, rnd_id, team_id):
         a.delete()
 
     return HttpResponseRedirect(reverse('rnd_detail', args=(arnd.id,)))
+
+
+@login_required
+def reveal_next(request):
+    """
+    Reveal the next team in the ranking
+    """
+    quiz = Quiz.objects.first()
+    if quiz and quiz.reveal_count < 3:
+        quiz.reveal_count += 1
+        quiz.save()
+
+    trigger_refresh()
+    return HttpResponseRedirect(reverse('index'))
 
 
 def team_result(request, team_id):
