@@ -81,8 +81,11 @@ WSGI_APPLICATION = 'kwispel.wsgi.application'
 ASGI_APPLICATION = 'kwispel.asgi.application'
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
     },
 }
 
