@@ -6,20 +6,9 @@
 {% endblock %}
 
 {% block content %}
+<div class="uk-text-lead">{{ quiz_name }}</div>
 {% if sorted %}
 <div class="uk-text-lead uk-text-center">{{ caption }}</div>
-
-{% if user.is_staff %}
-<button id="reveal">Reveal Next</button>
-
-<script>
-const a_protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-const adminsocket = new WebSocket(a_protocol + window.location.host + "/ws/ranking/");
-document.getElementById('reveal').addEventListener('click', () => {
-  adminsocket.send(JSON.stringify({ action: "reveal_next" }));
-});
-</script>
-{% endif %}
 
 <table id="ranking" class="uk-table uk-table-striped uk-text-lead">
     <thead>
@@ -31,28 +20,31 @@ document.getElementById('reveal').addEventListener('click', () => {
     </thead>
     <tbody>
         {% for result in sorted %}
-        <tr class="{% if forloop.counter0 < hidden %}hidden-row{% endif %}">
+        {% if forloop.counter0 < hidden %}
+        <tr>
+            <td class="uk-text-right">{{ result.0 }}</td>
+            <td>???</td>
+            <td class="uk-text-right">???</td>
+        </tr>
+        {% else %}
+        <tr>
             <td class="uk-text-right">{{ result.0 }}</td>
             <td>{{ result.1 }}</td>
             <td class="uk-text-right">{{ result.2 }}</td>
         </tr>
+        {% endif %}
         {% endfor %}
     </tbody>
 </table>
 
 <script>
 const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-const socket = new WebSocket(protocol + window.location.host + "/ws/ranking/");
-const hiddenRows = document.querySelectorAll('.hidden-row');
-let revealIndex = 0;
+const socket = new WebSocket(protocol + window.location.host + "/ws/refresh/");
 
-socket.onmessage = (event) => {
+socket.onmessage = function(event) {
   const data = JSON.parse(event.data);
-  if (data.action === "reveal_next" && revealIndex < hiddenRows.length) {
-    const row = hiddenRows[hiddenRows.length - 1 - revealIndex];
-    row.classList.remove('hidden-row');
-    row.classList.add('reveal');
-    revealIndex++;
+  if (data.action === "refresh") {
+    window.location.reload();
   }
 };
 </script>

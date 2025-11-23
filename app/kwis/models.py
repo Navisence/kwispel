@@ -10,7 +10,14 @@ from django.utils.translation import gettext_lazy as _
 
 class Quiz(models.Model):
     name = models.CharField(max_length=200)
-    hidden_count = models.IntegerField(default=0) # Number of hidden top teams in final ranking
+    reveal_count = models.IntegerField(default=0)  # Number of top teams to reveal in final ranking
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Quiz')
+        verbose_name_plural = _('Quizzes')
 
 
 class Team(models.Model):

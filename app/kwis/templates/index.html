@@ -8,6 +8,11 @@
 {% block content %}
 
 <h1 class="uk-heading-bullet">{% translate "Kwispel jury overview" %}</h1>
+{% if user.is_staff %}
+<div class="uk-card uk-card-default uk-card-hover uk-card-body uk-margin-bottom">
+    <a href="{% url 'reveal_next' %}" class="uk-button uk-button-primary">Reveal next</a>
+</div>
+{% endif %}
 <div class="uk-child-width-1-2@m uk-grid-small uk-grid-match" uk-grid>
     <div class="uk-card uk-card-default uk-card-hover uk-card-body">
         {% if round_list %}

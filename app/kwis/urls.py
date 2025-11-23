@@ -20,5 +20,6 @@ urlpatterns = [
     path('team/<int:team_id>', views.team_detail, name='team_detail'),
     path('team/<int:team_id>/result.png', cache_page(cache_timeout)(views.team_result)),
     path('vote/<int:rnd_id>/<int:team_id>', views.vote, name='vote'),
-    path('delete/<int:rnd_id>/<int:team_id>', views.delete, name='delete')
+    path('delete/<int:rnd_id>/<int:team_id>', views.delete, name='delete'),
+    path('reveal_next', views.reveal_next, name='reveal_next'),
 ]
