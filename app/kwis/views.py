@@ -115,7 +115,7 @@ def index(request):
         team_status.append((t, "%.1f / %.1f" % (subtotal, maxtotal), subtotal))
     team_status.sort(key=lambda tup: tup[2], reverse=True)
 
-    context = {'round_list': round_status, 'team_list': team_status, 'quiz_name': quiz_name }
+    context = {'round_list': round_status, 'team_list': team_status, 'quiz_name': quiz_name}
     return render(request, 'index.html', context)
 
 
@@ -147,7 +147,7 @@ def ranking(request):
 
     ranking = get_ranked_results(rnd_complete)
 
-    return render(request, 'ranking.html', {'sorted': ranking, 'caption': caption, 'hidden': hidden, 'quiz_name': Quiz.objects.first().name })
+    return render(request, 'ranking.html', {'sorted': ranking, 'caption': caption, 'hidden': hidden, 'quiz_name': Quiz.objects.first().name})
 
 
 @login_required
