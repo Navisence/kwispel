@@ -6,9 +6,11 @@
 {% endblock %}
 
 {% block content %}
+<div class="uk-text-lead">{{ quiz_name }}</div>
 {% if sorted %}
 <div class="uk-text-lead uk-text-center">{{ caption }}</div>
-<table class="uk-table uk-table-striped uk-text-lead">
+
+<table id="ranking" class="uk-table uk-table-striped uk-text-lead">
     <thead>
         <tr>
             <th class="uk-text-right">{% translate "Place" %}</th>
@@ -18,14 +20,34 @@
     </thead>
     <tbody>
         {% for result in sorted %}
+        {% if forloop.counter0 < hidden %}
+        <tr>
+            <td class="uk-text-right">{{ result.0 }}</td>
+            <td>???</td>
+            <td class="uk-text-right">???</td>
+        </tr>
+        {% else %}
         <tr>
             <td class="uk-text-right">{{ result.0 }}</td>
             <td>{{ result.1 }}</td>
             <td class="uk-text-right">{{ result.2 }}</td>
         </tr>
+        {% endif %}
         {% endfor %}
     </tbody>
 </table>
+
+<script>
+const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+const socket = new WebSocket(protocol + window.location.host + "/ws/refresh/");
+
+socket.onmessage = function(event) {
+  const data = JSON.parse(event.data);
+  if (data.action === "refresh") {
+    window.location.reload();
+  }
+};
+</script>
 
 {% else %}
 <div class="uk-text-lead uk-text-center">
