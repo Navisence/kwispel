@@ -272,6 +272,15 @@ def reveal_next(request):
     return HttpResponseRedirect(reverse('index'))
 
 
+@login_required
+def trigger_refresh_view(request):
+    """
+    Trigger a refresh of all connected contestant views
+    """
+    trigger_refresh()
+    return HttpResponseRedirect(reverse('index'))
+
+
 def team_result(request, team_id):
     """
     Plot results per team

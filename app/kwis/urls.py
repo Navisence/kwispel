@@ -22,4 +22,5 @@ urlpatterns = [
     path('vote/<int:rnd_id>/<int:team_id>', views.vote, name='vote'),
     path('delete/<int:rnd_id>/<int:team_id>', views.delete, name='delete'),
     path('reveal_next', views.reveal_next, name='reveal_next'),
+    path('trigger_refresh', views.trigger_refresh_view, name='trigger_refresh'),
 ]

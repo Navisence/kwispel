@@ -11,6 +11,7 @@
 {% if user.is_staff %}
 <div class="uk-card uk-card-default uk-card-hover uk-card-body uk-margin-bottom">
     <a href="{% url 'reveal_next' %}" class="uk-button uk-button-primary">Reveal next</a>
+    <a href="{% url 'trigger_refresh' %}" class="uk-button uk-button-secondary">Trigger refresh</a>
 </div>
 {% endif %}
 <div class="uk-child-width-1-2@m uk-grid-small uk-grid-match" uk-grid>
