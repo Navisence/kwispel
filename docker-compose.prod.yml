@@ -3,7 +3,7 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile.prod
-    command: gunicorn kwispel.wsgi:application --bind 0.0.0.0:8000
+    command: daphne -b 0.0.0.0 -p 8000 kwispel.asgi:application
     volumes:
       - ./data:/home/app/web/data
       - static_volume:/home/app/web/staticfiles
@@ -20,6 +20,12 @@ services:
       - 1337:80
     depends_on:
       - web
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - 6379:6379
 
 volumes:
   static_volume:

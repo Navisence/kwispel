@@ -2,9 +2,22 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 # These models are defined:
+# - Quiz for storing state of a quiz
 # - Teams participating
 # - Rounds in the quiz
 # - Answered score per round for each team
+
+
+class Quiz(models.Model):
+    name = models.CharField(max_length=200)
+    reveal_count = models.IntegerField(default=0)  # Number of top teams to reveal in final ranking
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Quiz')
+        verbose_name_plural = _('Quizzes')
 
 
 class Team(models.Model):

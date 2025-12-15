@@ -23,13 +23,11 @@ python manage.py migrate --noinput
 
 # translation files are created/updated with makemessages. These files should be
 # part of version control.
-# django-admin makemessages -a -l nl -e html,py
+# django-admin makemessages -l nl -e html,py
 django-admin compilemessages
 
-if [ "$DJANGO_ENV" = "production" ]; then
-    echo "Collecting static files..."
-    python manage.py collectstatic --noinput
-fi
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
 
 echo "Ensuring superuser exists..."
 python manage.py shell <<EOF
