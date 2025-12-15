@@ -537,7 +537,7 @@ def ranking_overview(request):
     ax1.plot(position_sequence, linewidth=2)
     ind = np.arange(len(round_names))
     ax1.set_xticks(ind)
-    ax1.set_xticklabels(round_names)
+    ax1.set_xticklabels(round_names, rotation=dynamic_rotation(Round.objects.count()), ha="right")
     ax1.tick_params(axis='both', which='both', labelbottom=True, labeltop=False, labelleft=True, labelright=True)
     ax1.set_xlabel(_("Round"))
     ax1.set_ylabel(_("Position"))
