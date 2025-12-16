@@ -309,7 +309,7 @@ def team_result(request, team_id):
 
     # Set labels
     ax.set_xticks(ind)
-    ax.set_xticklabels(names)
+    ax.set_xticklabels(names, rotation=dynamic_rotation(Round.objects.count()), ha='right')
     ax.set_xlabel(_("Rounds"))
     ax.set_ylabel(_("Scores"))
 
@@ -463,7 +463,7 @@ def rnd_overview(request):
 
     # Set labels
     ax1.set_xticks(ind)
-    ax1.set_xticklabels(names, rotation=dynamic_rotation(Round.objects.count()), ha='center')
+    ax1.set_xticklabels(names, rotation=dynamic_rotation(Round.objects.count()), ha='right')
     ax1.set_xlabel(_("Rounds"))
     ax1.set_ylabel(_("Cumulative scores and progress"))
     ax2.set_ylabel(_("Statistics"))
