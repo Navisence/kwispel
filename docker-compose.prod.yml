@@ -11,6 +11,9 @@ services:
       - 8000
     env_file:
       - ./.env.prod
+    depends_on:
+      - redis
+    restart: unless-stopped
 
   nginx:
     build: ./nginx
@@ -20,11 +23,13 @@ services:
       - 1337:80
     depends_on:
       - web
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
     ports:
       - 6379:6379
+    restart: unless-stopped
 
 volumes:
   static_volume:
